@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "nko": "~0.1.0",
-    "express": ">=2.4.6"
-    "aws-lib": "0.0.5"
+    "express": ">=2.4.6",
+    "dnode": ">=0.8.2"
   },
   "devDependencies": {}
 }
