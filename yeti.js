@@ -37,51 +37,58 @@ var yeti = {
     yeti.request_log = [];
     yeti.requests_sent = 0;
     while(num_requests < yeti.settings.max_requests) {
-        for(var i=0; i < yeti.settings.requests.length; i++) {
-            console.log('sending request '+num_requests+': '+JSON.stringify(yeti.settings.requests[i]));
-            
-            // start a log for yeti request
-            yeti.request_log[num_requests] = {
-                method: yeti.settings.requests[i].method,
-                path: yeti.settings.requests[i].path
-            };
+      yeti.settings.requests.forEach(function(req_data){
+        if(num_requests == yeti.settings.max_requests) return;      
+        var request_id = num_requests;
+        yeti.request_log[request_id] = {};
+        
+        console.log('sending request '+num_requests+': '+JSON.stringify(req_data));
+        
+        // start a log for yeti request
+        yeti.request_log[num_requests] = {
+          method: req_data.method,
+          path: req_data.path
+        };
 
-            // make the request
-            var options = {
-                host: yeti.settings.host,
-                port: yeti.settings.port,
-                method: yeti.settings.requests[i].method,
-                path: yeti.settings.requests[i].path,
-                headers: {
-                    //'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:6.0) Gecko/20100101 Firefox/6.0',
-                    'User-Agent': 'I AM YETI AND YOU ARE STUCK IN HAILSTORM',
-                    'Connection': 'keep-alive'
-                }
-            }
-            var req = yeti.get_protocol().request(options, function(res){
-                yeti.request_log[yeti.request_id].end_time = new Date().getTime();
-                yeti.request_log[yeti.request_id].response_time = yeti.request_log[yeti.request_id].end_time - yeti.request_log[yeti.request_id].start_time;
-                yeti.request_log[yeti.request_id].status_code = res.statusCode;
-                console.log('request '+yeti.request_id+' '+yeti.request_log[yeti.request_id].method+' '+yeti.request_log[yeti.request_id].path+' finished with code '+yeti.request_log[yeti.request_id].status_code+' in '+yeti.request_log[yeti.request_id].response_time+' ms');
-                res.on('end', function(){yeti.requests_sent++});
-            });
-            req.request_id = num_requests;
-            req.on('error', function(e){
-                console.log('request '+yeti.request_id+' error: '+e.message);
-            });
-            req.on('socket', function(socket){
-                yeti.request_log[yeti.request_id].start_time = new Date().getTime();
-            });
-            if(yeti.settings.requests[i].body)
-                req.write(yeti.settings.requests[i].body);
-            req.end();
-
-            num_requests++;
-            if(num_requests == yeti.settings.max_requests) break;
+        // make the request
+        var options = {
+          host: yeti.settings.host,
+          port: yeti.settings.port,
+          method: req_data.method,
+          path: req_data.path,
+          headers: {
+              //'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:6.0) Gecko/20100101 Firefox/6.0',
+              'User-Agent': 'I AM YETI AND YOU ARE STUCK IN HAILSTORM',
+              'Connection': 'keep-alive'
+          }
         }
+        
+        var req = yeti.get_protocol().request(options, function(res){
+          res.on('end', function(){
+            yeti.request_log[request_id].end_time = new Date().getTime();
+            yeti.request_log[request_id].response_time = yeti.request_log[request_id].end_time - yeti.request_log[request_id].start_time;
+            yeti.request_log[request_id].status_code = res.statusCode;          
+            yeti.requests_sent++;
+            console.log('request '+request_id+' '+yeti.request_log[request_id].method+' '+yeti.request_log[request_id].path+' finished with code '+yeti.request_log[request_id].status_code+' in '+yeti.request_log[request_id].response_time+' ms');            
+          });
+        });
+
+        req.on('error', function(e){
+          console.log('request '+request_id+' error: '+e.message);
+        });
+        req.on('socket', function(socket){
+          yeti.request_log[request_id].start_time = new Date().getTime();
+        });
+        
+        if(request_id.body) req.write(request_id.body);
+        
+        req.end();
+
+        num_requests++;
+      });
     }
     console.log(yeti.settings.status);
-    callback(err, yeti.settings.status);
+    callback(null, yeti.settings.status);
   },
   stop : function() {
     yeti.settings.status = 'hibernating';
