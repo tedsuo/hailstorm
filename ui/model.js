@@ -28,7 +28,17 @@ var Account = new Schema({
   , yetis     : [Yeti]
 });
 Account.statics.find_by_username_and_password = function(username, password, cb) {
-  return this.find({ username:username, password:hash(password) }, cb);
+  this.find({ username:username, password:hash(password) }, function(err,docs){
+    if(err) { 
+      cb(err);
+    } else {
+      if(docs.length == 0) {
+        cb(['user not found']);
+      } else {
+        cb(null, docs[0]);
+      }
+    }
+  })
 };
 
 exports.Yeti = mongoose.model('Yeti', Yeti);
