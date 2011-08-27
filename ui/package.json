@@ -14,7 +14,8 @@
     "express": ">=2.4.6",
     "ejs": ">=0.4.3",
     "dnode": ">=0.8.2",
-    "everyauth": "~0.2.18"
+    "everyauth": "~0.2.18",
+    "mongoose": "~2.0.2"
   },
   "devDependencies": {}
 }
