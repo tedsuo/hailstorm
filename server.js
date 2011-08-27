@@ -1,10 +1,10 @@
-var http = require('http');
 var nko = require('nko')('sOlBQnEkup4F/fL4');
+var spawn = require('child_process').spawn;
 
-var app = http.createServer(function (req, res) {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.end('Get ready for the hailstorm! >:) ');
-});
+// spawn the UI
+var ui = spawn('node', ['server.js'], { cwd:'./ui/' });
+ui.stdout.on('data', function(data){ console.log('UI stdout: '+data); });
+ui.stderr.on('data', function(data){ console.log('UI stderr: '+data); });
+ui.on('exit', function(code){ console.log('UI exited with code '+code); });
+console.log('UI has been spawned');
 
-app.listen(parseInt(process.env.PORT) || 7777);
-console.log('Listening on ' + app.address().port);

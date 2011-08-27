@@ -1,6 +1,13 @@
 var express = require('express');
+var mongoose = require('mongoose');
 var controller = require('./controller');
 var model = require('./model');
+
+/*var account = new model.Account({ username:'test', password:'test'});
+account.save(function(err){
+  if(err) console.log(err);
+  else console.log('success!');
+});*/
 
 if(process.env.NODE_ENV == 'production'){
   port = 80;
