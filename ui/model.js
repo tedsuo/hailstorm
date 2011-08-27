@@ -1,3 +1,61 @@
+var crypto = require('crypto');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+mongoose.connect('mongodb://localhost/hailstorm');
+
+function hash(password) {
+  return crypto.createHash('sha1').update(password).digest('hex');
+}
+
+var Yeti = new Schema({
+    host      : String
+  , port      : Number
+});
+
+var Test = new Schema({
+    host      : String
+  , port      : Number
+  , protocol  : String
+  , verified  : Boolean
+  , requests  : String
+  , results   : String
+});
+
+var Account = new Schema({
+    username  : String
+  , password  : { type:String, set:hash }
+  , tests     : [Test]
+  , yetis     : [Yeti]
+});
+Account.statics.find_by_username_and_password = function(username, password, cb) {
+  return this.find({ username:username, password:hash(password) }, cb);
+};
+
+exports.Yeti = mongoose.model('Yeti', Yeti);
+exports.Test = mongoose.model('Test', Test);
+exports.Account = mongoose.model('Account', Account);
+
+exports.create_account = function(username, password, cb) {
+  var account = new exports.Account({ username:username, password:password });
+  account.save(function(err){
+    if(err) {
+      cb(err);
+    } else {
+      cb(null, account);
+    }
+  });
+};
+
+exports.does_username_exist = function(username, cb) {
+  Account.find({ username:username }, function(err, docs){
+    if(err) {
+      cb(err);
+    } else {
+      cb(err, (docs.length > 0));
+    }
+  });
+};
+
 exports.setUser = function(){
   return function(req,res,next){
     res.params = {user:'Somebody'};

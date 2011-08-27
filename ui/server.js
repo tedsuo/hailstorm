@@ -1,4 +1,5 @@
 var express = require('express');
+var mongoose = require('mongoose');
 var controller = require('./controller');
 var model = require('./model');
 var everyauth = require('everyauth');
@@ -75,6 +76,12 @@ everyauth.password
     // here; all other validations occur in the `validateRegistration` step documented above.
   })
   .registerSuccessRedirect('/'); // Where to redirect to after a successful registrationi
+
+/*var account = new model.Account({ username:'test', password:'test'});
+account.save(function(err){
+  if(err) console.log(err);
+  else console.log('success!');
+});*/
 
 if(process.env.NODE_ENV == 'production'){
   port = 80;
