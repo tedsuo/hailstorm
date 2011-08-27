@@ -111,7 +111,6 @@ var client = dnode({
 });
 
 client.connect(yeti.mc_port, function(remote, conn){
-  remote.callIn();
   console.log('Connected to MC on '+ yeti.mc_port + '\n Awaiting Orders...');
 });
 
