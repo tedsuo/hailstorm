@@ -1,0 +1,38 @@
+body {
+    background-color: #000000;
+    background-image: url('/images/background.jpg');
+    background-position: top center;
+    background-repeat: no-repeat;
+    color: #ffffff;
+}
+
+a {
+    color: #008cff;
+}
+
+#wrapper {
+    width: 960px;
+    margin: 0 auto;
+    background-image: url('/images/logo.png');
+    background-position: top left;
+    background-repeat: no-repeat;
+    min-height: 600px;
+}
+
+#wrapper #header {
+    margin-left: 320px;
+    padding-top: 50px;
+}
+
+#wrapper #header h1 {
+    font-family: WickedGritRegular;
+    font-size: 70px;
+    margin: 0;
+    padding: 0;
+}
+#wrapper #header p {
+    font-family: WickedGritRegular;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+}
