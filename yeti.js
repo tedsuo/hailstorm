@@ -9,7 +9,7 @@ var agent;
 
 // returns http or https
 function get_protocol() {
-    if(settings.protocol == 'https')
+    if(settings && settings.protocol == 'https')
         return https;
     else
         return http;
@@ -58,8 +58,6 @@ app.post('/start', function(req, res) {
             };
 
             // make the request
-            var req_protocol = http;
-            if(settings.protocol == 'https') req_protocol = https;
             var options = {
                 agent: agent,
                 host: settings.host,
@@ -72,7 +70,7 @@ app.post('/start', function(req, res) {
                     'Connection': 'keep-alive'
                 }
             }
-            var req = req_protocol.request(options, function(res){
+            var req = get_protocol().request(options, function(res){
                 request_log[this.request_id].end_time = new Date().getTime();
                 request_log[this.request_id].response_time = request_log[this.request_id].end_time - request_log[this.request_id].start_time;
                 request_log[this.request_id].status_code = res.statusCode;
