@@ -44,6 +44,7 @@ app.post('/settings', function(req, res) {
 // start
 app.post('/start', function(req, res) {
     console.log('firing!');
+    settings.firing = true;
     var num_requests = 0;
     while(num_requests < settings.max_requests) {
         for(var i=0; i<settings.requests.length; i++) {
@@ -88,11 +89,12 @@ app.post('/start', function(req, res) {
             if(num_requests == settings.max_requests) break;
         }
     }
-    res.send('');
+    res.send('firing!');
 });
 
 // stop
 function stop() {
+    settings.firing = false;
     if(agent)
         agent.queue = [];
 }
@@ -103,10 +105,32 @@ app.post('/stop', function(req, res) {
 
 // status
 app.get('/status', function(req, res) {
-    res.send('');
+    // status
+    if(settings.firing) {
+        if(agent && agent.queue && agent.queue.length == 0)
+            settings.firing = false;
+    }
+    var status;
+    if(settings.firing) {
+        status = 'attacking';
+    } else {
+        status = 'hibernating';
+    }
+
+    res.send({
+        status: status,
+        statistics: {
+            
+        }       
+    });
 });
 
 var port = parseInt(process.env.YETI_PORT) || 1337;
 app.listen(port);
 console.log('Listening on '+port);
+
+// attacking or hibernating
+// total requests 
+//
+
 
