@@ -25,9 +25,15 @@ body {
     font-style: italic;
 }
 
-#wrapper #follow {
+#wrapper #vote {
     position: absolute;
     top: 450px;
+    left: 75px;
+}
+
+#wrapper #follow {
+    position: absolute;
+    top: 500px;
     left: 70px;
     width: 130px;
     font-family: SVBasicManualBook;
@@ -37,7 +43,7 @@ body {
 
 #wrapper #twitter {
     position: absolute;
-    top: 480px;
+    top: 530px;
     left: 75px;
     width: 130px;
 }
