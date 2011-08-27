@@ -1,6 +1,6 @@
-{{- if ('undefined' !== typeof errors && errors.length) { }}
+{{ if ('undefined' !== typeof errors && errors.length) { }}
   <ul id=errors>
-    {{- each error in errors { }}
+    {{ each error in errors { }}
       <li id="error"> {{= error}} </li>
     {{ } }}
   </ul>
