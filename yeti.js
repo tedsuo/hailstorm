@@ -36,8 +36,7 @@ app.post('/settings', function(req, res) {
     console.log('recieved settings');
     console.log(settings);
 
-    agent = get_protocol().getAgent(settings.host, settings.port);
-    agent.maxSockets = settings.concurrency;
+    get_protocol().globalAgent.maxSockets = settings.concurrency;
 
     res.send('ready to fire');
 });
@@ -53,13 +52,11 @@ app.post('/start', function(req, res) {
             // start a log for this request
             request_log[num_requests] = {
                 method: settings.requests[i].method,
-                path: settings.requests[i].path,
-                start_time: new Date().getTime()
+                path: settings.requests[i].path
             };
 
             // make the request
             var options = {
-                agent: agent,
                 host: settings.host,
                 port: settings.port,
                 method: settings.requests[i].method,
@@ -79,6 +76,9 @@ app.post('/start', function(req, res) {
             req.request_id = num_requests;
             req.on('error', function(e){
                 console.log('request '+this.request_id+' error: '+e.message);
+            });
+            req.on('socket', function(socket){
+                request_log[this.request_id].start_time = new Date().getTime();
             });
             if(settings.requests[i].body)
                 req.write(settings.requests[i].body);
@@ -106,5 +106,7 @@ app.get('/status', function(req, res) {
     res.send('');
 });
 
-app.listen(parseInt(process.env.YETI_PORT) || 1337);
-console.log('Listening on ' + app.address().port);
+var port = parseInt(process.env.YETI_PORT) || 1337;
+app.listen(port);
+console.log('Listening on '+port);
+
