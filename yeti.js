@@ -1,7 +1,24 @@
 var http = require('http');
 var express = require('express');
 
+// settings for this yeti
+var settings = {
+    protocol: 'http',
+    port: 80,
+    domain: '',
+    uri_list: [],
+    max_requests: 100,
+    concurrency: 10
+};
+
+// return an error
+function error(res, error_message) {
+    res.send(error_message, 500);
+}
+
+// here be the web server!
 var app = express.createServer();
+app.use(express.bodyParser());
 
 // in case people are curious what a yeti is
 app.get('/', function(req, res) {
@@ -9,8 +26,27 @@ app.get('/', function(req, res) {
 });
 
 // yeti's settings
+// expects: protocol (http or https), port, domain, uri_list, max_requests, concurrency
 app.post('/settings', function(req, res) {
-    res.send('');
+    // validate
+    if(req.body.protocol != 'http' && req.body.protocol != 'https') {
+        error('Protocol must be "http" or "https"');
+        return;
+    }
+    if(Number(req.body.port <= 0 || req.body.port > 365535) {
+        error('Invalid port');
+        return;
+    }
+    // change the settings
+    settings = {
+        protocol: req.body.protocol,
+        port: req.body.port,
+        domain: req.body.domain,
+        targets: req.body.targets,
+        max_requests: req.body.max_requests,
+        concurrency: req.body.concurrency
+    }
+    res.send('ready to fire');
 });
 
 // start
