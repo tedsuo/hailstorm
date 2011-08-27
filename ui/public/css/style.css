@@ -1,13 +1,9 @@
 body {
     background-color: #000000;
-    background-image: url('/images/background.jpg');
+    background-image: url('/images/background.jpg'), url('/images/background_blue_bar.png');
     background-position: top center;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat, repeat-y;
     color: #ffffff;
-}
-
-a {
-    color: #008cff;
 }
 
 #wrapper {
@@ -17,11 +13,53 @@ a {
     background-position: top left;
     background-repeat: no-repeat;
     min-height: 600px;
+    position: relative;
+}
+
+#wrapper a {
+    color: #008cff;
+    text-decoration: none;
+}
+
+#wrapper a:hover {
+    font-style: italic;
+}
+
+#wrapper #follow {
+    position: absolute;
+    top: 450px;
+    left: 70px;
+    width: 130px;
+    font-family: SVBasicManualBook;
+    font-size: 22px;
+    color: #ffffff;
+}
+
+#wrapper #twitter {
+    position: absolute;
+    top: 480px;
+    left: 75px;
+    width: 130px;
+}
+
+#wrapper #twitter a {
+    color: #d5ecff;
+    text-decoration: none;
+    display: block;
+    padding-bottom: 5px;
+    font-family: SVBasicManualBook;
+    font-size: 20px;
+}
+
+#wrapper #twitter a:hover {
+    font-style: italic;
 }
 
 #wrapper #header {
-    margin-left: 320px;
-    padding-top: 50px;
+    position: absolute;
+    top: 50px;
+    left: 320px;
+    width: 640px;
 }
 
 #wrapper #header h1 {
@@ -30,9 +68,32 @@ a {
     margin: 0;
     padding: 0;
 }
+
 #wrapper #header p {
     font-family: WickedGritRegular;
     font-size: 20px;
     margin: 0;
     padding: 0;
 }
+
+#wrapper #content {
+    position: absolute;
+    top: 210px;
+    left: 280px;
+    width: 680px;
+}
+
+#wrapper #content p {
+    font-family: SVBasicManualBook;
+    font-size: 18px;
+}
+
+#wrapper a.button {
+    background-color: #008cff;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 8px 12px;
+    font-family: SVBasicManualBook;
+    font-size: 18px;
+}
+
