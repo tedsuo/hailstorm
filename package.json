@@ -1,0 +1,16 @@
+{
+  "author": "",
+  "name": "hailstorm",
+  "description": "an open source load testing environment",
+  "version": "0.0.0",
+  "repository": {
+    "url": ""
+  },
+  "engines": {
+    "node": "~v0.4.11"
+  },
+  "dependencies": {
+    "nko": "~0.1.0"
+  },
+  "devDependencies": {}
+}
