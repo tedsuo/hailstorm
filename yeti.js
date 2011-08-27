@@ -79,8 +79,11 @@ app.post('/start', function(req, res) {
                 console.log('request '+this.request_id+' '+request_log[this.request_id].method+' '+request_log[this.request_id].path+' finished with code '+request_log[this.request_id].status_code+' in '+request_log[this.request_id].response_time+' ms');
             });
             req.request_id = num_requests;
+            req.on('error', function(e){
+                console.log('request '+this.request_id+' error: '+e.message);
+            });
             if(settings.requests[i].body)
-                req.send(settings.requests[i].body);
+                req.write(settings.requests[i].body);
             req.end();
 
             num_requests++;
@@ -92,6 +95,8 @@ app.post('/start', function(req, res) {
 
 // stop
 function stop() {
+    if(agent)
+        agent.queue = [];
 }
 app.post('/stop', function(req, res) {
     stop();
