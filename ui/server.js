@@ -3,26 +3,78 @@ var controller = require('./controller');
 var model = require('./model');
 var everyauth = require('everyauth');
 // Step 1 code goes here
+everyauth.password
+  .getLoginPath('/login') // Uri path to the login page
+  .postLoginPath('/login') // Uri path that your login form POSTs to
+  .loginView('views/login')
+  .authenticate( function (login, password) {
+    // Either, we return a user or an array of errors if doing sync auth.
+    find_user_by_login_and_password(login, password, function(err, user){
+      if(err && err.length > 0){
+        return err;
+      }
+      return user;
+    });
+  })
+  .loginSuccessRedirect('/') // Where to redirect to after a login
 
-everyauth.google
-  .appId('YOUR CLIENT ID HERE')
-  .appSecret('YOUR CLIENT SECRET HERE')
-  .scope('https://www.google.com/m8/feeds') // What you want access to
-  .handleAuthCallbackError( function (req, res) {
-    // If a user denies your app, Google will redirect the user to
-    // /auth/facebook/callback?error=access_denied
-    // This configurable route handler defines how you want to respond to
-    // that.
-    // If you do not configure this, everyauth renders a default fallback
-    // view notifying the user that their authentication failed and why.
+    // If login fails, we render the errors via the login view template,
+    // so just make sure your loginView() template incorporates an `errors` local.
+    // See './example/views/login.jade'
+
+  .getRegisterPath('/register') // Uri path to the registration page
+  .postRegisterPath('/register') // The Uri path that your registration form POSTs to
+  .registerView('views/register')
+  .validateRegistration( function (newUserAttributes) {
+    // Validate the registration input
+    // Return undefined, null, or [] if validation succeeds
+    // Return an array of error messages (or Promise promising this array)
+    // if validation fails
+    //
+    // e.g., assuming you define validate with the following signature
+    // var errors = validate(login, password, extraParams);
+    // return errors;
+    //
+    // The `errors` you return show up as an `errors` local in your jade template
+    model.does_username_exist(username, function(err, exists){
+      if(exists) {
+        return ['That username is already taken! Either log in or try another username'];
+      } else {
+        return [];
+      }
+    });
   })
-  .findOrCreateUser( function (session, accessToken, accessTokenExtra, googleUserMetadata) {
-    // find or create user logic goes here
-    // Return a user or Promise that promises a user
-    // Promises are created via
-    //     var promise = this.Promise();
+  .registerUser( function (newUserAttributes) {
+    register(username, password, function(err, user){
+      if(err && err.length > 0){
+        return err;
+      }
+      return user;
+    });
+    // This step is only executed if we pass the validateRegistration step without
+    // any errors.
+    //
+    // Returns a user (or a Promise that promises a user) after adding it to
+    // some user store.
+    //
+    // As an edge case, sometimes your database may make you aware of violation
+    // of the unique login index, so if this error is sent back in an async
+    // callback, then you can just return that error as a single element array
+    // containing just that error message, and everyauth will automatically handle
+    // that as a failed registration. Again, you will have access to this error via
+    // the `errors` local in your register view jade template.
+    // e.g.,
+    // var promise = this.Promise();
+    // User.create(newUserAttributes, function (err, user) {
+    //   if (err) return promise.fulfill([err]);
+    //   promise.fulfill(user);
+    // });
+    // return promise;
+    //
+    // Note: Index and db-driven validations are the only validations that occur 
+    // here; all other validations occur in the `validateRegistration` step documented above.
   })
-  .redirectPath('/');
+  .registerSuccessRedirect('/'); // Where to redirect to after a successful registrationi
 
 if(process.env.NODE_ENV == 'production'){
   port = 80;
