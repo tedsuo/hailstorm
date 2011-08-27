@@ -5,22 +5,9 @@ var express = require('express');
 var dnode = require('dnode');
 
 
-var client = dnode({
-  set : yeti.set,
-  start: yeti.start,
-  stop: yeti.stop,
-  status: yeti.status
-});
-
-client.connect(1337, function(remote, conn){
-
-});
-
-console.log('Connected to MC on '+port + '\n Awaiting Orders...);
-
-
 // yeti's settings
 var yeti = {
+  mc_port: 1337,
   settings : {},
   requests_sent: 0,
   request_log: {},
@@ -122,6 +109,17 @@ for(i in yeti) {
 
 // attacking or hibernating
 // total requests 
-//
+
+var client = dnode({
+  set : yeti.set,
+  start: yeti.start,
+  stop: yeti.stop,
+  status: yeti.status
+});
+
+client.connect(yeti.mc_port, function(remote, conn){
+  console.log('Connected to MC on '+ yeti.mc_port + '\n Awaiting Orders...');
+});
+
 
 
