@@ -100,7 +100,7 @@ function stop() {
 }
 app.post('/stop', function(req, res) {
     stop();
-    res.send('');
+    res.send('this yeti has put down its snowballs');
 });
 
 // status
