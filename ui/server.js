@@ -7,10 +7,10 @@ var everyauth = require('everyauth');
 everyauth.password
   .getLoginPath('/login') // Uri path to the login page
   .postLoginPath('/login') // Uri path that your login form POSTs to
-  .loginView('views/login')
+  .loginView('login.jade')
   .authenticate( function (login, password) {
     // Either, we return a user or an array of errors if doing sync auth.
-    find_user_by_login_and_password(login, password, function(err, user){
+    model.find_user_by_login_and_password(login, password, function(err, user){
       if(err && err.length > 0){
         return err;
       }
@@ -25,7 +25,7 @@ everyauth.password
 
   .getRegisterPath('/register') // Uri path to the registration page
   .postRegisterPath('/register') // The Uri path that your registration form POSTs to
-  .registerView('views/register')
+  .registerView('register')
   .validateRegistration( function (newUserAttributes) {
     // Validate the registration input
     // Return undefined, null, or [] if validation succeeds
@@ -46,7 +46,7 @@ everyauth.password
     });
   })
   .registerUser( function (newUserAttributes) {
-    register(username, password, function(err, user){
+    model.create_account(username, password, function(err, user){
       if(err && err.length > 0){
         return err;
       }
