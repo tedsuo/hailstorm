@@ -25,7 +25,7 @@ everyauth.password
 
   .getRegisterPath('/register') // Uri path to the registration page
   .postRegisterPath('/register') // The Uri path that your registration form POSTs to
-  .registerView('register.jade')
+  .registerView('register.ejs')
   .validateRegistration( function (newUserAttributes) {
     // Validate the registration input
     // Return undefined, null, or [] if validation succeeds
