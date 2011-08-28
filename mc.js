@@ -176,6 +176,7 @@ app.post('/destroy/:id', function(req, res){
 
 app.post('/set/:id', function(req, res){
   mc.set(req, res);
+  console.log('crapola');
 });
 
 app.post('/start/:id', function(req, res){
