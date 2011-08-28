@@ -2,11 +2,11 @@ var http = require('http');
 var https = require('https');
 var dns = require('dns');
 
-var Yeti = function(o){
-  this.remote = o.remote;
+var Yeti = function(){
   this.settings = {};
   this.requests_sent = 0;
   this.request_log = {};
+  this.status = 'waking up';
 };
 
 Yeti.prototype.set = function(settings, callback){
@@ -28,7 +28,7 @@ Yeti.prototype.set = function(settings, callback){
 };
 
 Yeti.prototype.after_set = function(callback){
-  this.status = 'awaiting commands';
+  this.status = 'ready';
   this.settings.current_request_id = 0;
   this.agent = new http.Agent();
   this.agent.maxSockets = this.settings.concurrency;
@@ -68,10 +68,7 @@ Yeti.prototype.stop = function() {
   if(this.agent) this.agent.requests = {};
 };
 
-Yeti.prototype.status = function(callback) {
-  if(this.settings.max_requests == this.requests_sent) {
-    this.status = 'catching breath';
-  }
+Yeti.prototype.getStatus = function(callback) {
   callback(null,{
     status: this.status,
     requests_sent: this.requests_sent
@@ -103,7 +100,7 @@ Yeti.prototype.attack = function(){
     agent: this.agent,
     headers: {
         //'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:6.0) Gecko/20100101 Firefox/6.0',
-        'User-Agent': 'I AM YETI AND YOU ARE STUCK IN HAILSTORM',
+        'User-Agent': 'I AM YETI AND YOU ARE STUCK IN A HAILSTORM',
         'Connection': 'keep-alive',
         'Host': this.settings.host
     }
@@ -142,11 +139,16 @@ Yeti.prototype.on_request_start = function(request_id){
 Yeti.prototype.on_request_end = function(request_id,res){
   // queue up another request
   this.attack();
+  
+  this.requests_sent++;  
+  if(this.settings.max_requests == this.requests_sent) {
+    this.status = 'hibernating';
+  }
+    
   // log result
   this.request_log[request_id].end_time = new Date().getTime() - this.initial_start_time;
   this.request_log[request_id].response_time = this.request_log[request_id].end_time - this.request_log[request_id].start_time;
-  this.request_log[request_id].status_code = res.statusCode;          
-  this.requests_sent++;
+  this.request_log[request_id].status_code = res.statusCode;
   console.log('request '+request_id+' '+this.request_log[request_id].method+' '+this.request_log[request_id].path+' finished with code '+this.request_log[request_id].status_code+' in '+this.request_log[request_id].response_time+' ms');
   this.remote.report(this.request_log[request_id]);
 };

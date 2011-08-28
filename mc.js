@@ -16,7 +16,7 @@ function obj_length(obj){
 
 var yeti_server_port = parseInt(process.env.YETI_DNODE_PORT) || 1337;
 var yeti_server = dnode(function (client, conn){
-  var yeti = {client: client, conn: conn, data:{}}
+  var yeti = {client: client, conn: conn, data:{}, max_responses: 0};
   conn.on('ready',function(){
     client.getId( function(err,id){
       console.log('yeti '+id+' arrived');
@@ -31,7 +31,6 @@ var yeti_server = dnode(function (client, conn){
   });
   
   this.report = function(result){
-    console.log(result);
     var rounded_response = Math.round(result.response_time / 100);
     var rounded_start_time = Math.ceil(result.start_time / 5000);
     if(yeti.data[result.status_code] == undefined){
@@ -44,7 +43,14 @@ var yeti_server = dnode(function (client, conn){
       yeti.data[result.status_code][rounded_start_time][rounded_response] = 0;
     }
     yeti.data[result.status_code][rounded_start_time][rounded_response]++;
+    if(yeti.data[result.status_code][rounded_start_time][rounded_response] > yeti.max_responses){
+      yeti.max_responses = yeti.data[result.status_code][rounded_start_time][rounded_response];
+    }
   }
+  
+  this.updateYetiStatus = function(status){
+    yeti.status = status;
+  };
 }).listen(yeti_server_port);
 console.log('yeti server listening on ' + yeti_server_port);
 
@@ -120,10 +126,10 @@ var mc = {
       res.end('yeti does not exit');
       return;
     }
-    if( yeti.status !== "awaiting commands"){
+    if( yeti.status !== "ready"){
       res.writeHead(500);
       res.end('yeti not ready');
-      return;    
+      return;
     }
     var res_obj = {};
     yeti.client.start(function(err, status){
@@ -141,7 +147,8 @@ var mc = {
       res.writeHead(500);
       res.end('yeti does not exit');
       return;
-    }    
+    }
+    var res_obj = {};    
     yeti.client.stop(function(err, status){
       res_obj[yeti.id] = {
         status: status
@@ -157,15 +164,11 @@ var mc = {
       res.writeHead(500);
       res.end('yeti does not exit');
       return;
-    }    
+    }
     var res_obj = {};
-    console.log(yeti);
     yeti.client.status(function(err, status){
-      console.log('status');
-      res_obj[yeti.id] = {
-        status: status
-      };
-      yeti.status = status;
+      res_obj[yeti.id] = status;
+      yeti.status = status.status;
       res.send(JSON.stringify(res_obj));
     });
   },
@@ -181,7 +184,7 @@ var mc = {
       res.writeHead(200);
       res.end();
     }
-    res.send(JSON.stringify(yeti.data));
+    res.send(JSON.stringify({data: yeti.data, max_responses: yeti.max_responses}));
   }
 }
 
@@ -203,7 +206,6 @@ app.post('/destroy/:id', function(req, res){
 
 app.post('/set/:id', function(req, res){
   mc.set(req, res);
-  console.log('crapola');
 });
 
 app.post('/start/:id', function(req, res){

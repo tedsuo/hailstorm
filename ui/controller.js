@@ -124,18 +124,19 @@ exports.routes = function(app){
         if(!account) {
           errors.push('Something weird happened, I guess you can\'t login');
         }
-        
-        // if there are errors print them
-        if(errors.length > 0) {
-          render_errors(errors);
-        }
-        // otherwise login
-        else {
-          req.session.account_id = account._id;
-          res.redirect('/dashboard');
-          console.log('login successful! '+JSON.stringify(account));
-        }
       }
+
+      // if there are errors print them
+      if(errors.length > 0) {
+        render_errors(errors);
+      }
+      // otherwise login
+      else {
+        req.session.account_id = account._id;
+        res.redirect('/dashboard');
+        console.log('login successful! '+JSON.stringify(account));
+      }
+
     });
   }); 
 
@@ -226,6 +227,30 @@ exports.routes = function(app){
       return;
     }
     res.render('test_run',_.extend(logged_in(req),{test : test})); 
+  });
+
+  app.get('/test/report/:id',function(req, res){
+    if(!force_authentication(req, res)) return;
+/*    var test = req.account.tests.id(req.params.id);
+    console.log(test);
+    if(!test.verified){
+      render('/dashboard');
+      return;
+    }*/
+    yeti_id = req.params.id;
+    report_options = get_req_options();
+    report_options.path = '/report/' + yeti_id;
+    report = http.get(report_options, function(report_res){
+      data_buffer = '';
+      report_res.on('data', function(data){
+        data_buffer += data;
+      });
+      report_res.on('end', function(){
+        res.render('test_report',_.extend(logged_in(req),{data : data_buffer})); 
+      });
+    }).on('error', function(e){
+      res.send('Error: '+e.message);
+    });
   });
 
   app.post('/test/run', function(req, res){
@@ -408,7 +433,10 @@ exports.routes = function(app){
   app.get('/test/delete/:id', function(req,res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.params.id);
-    res.render('test_delete', _.extend(logged_in(req), { test:test }));
+    var requests = [];
+    if(test.requests)
+      requests = JSON.parse(test.requests);
+    res.render('test_delete', _.extend(logged_in(req), { test:test, requests:requests }));
   }); 
 
   app.post('/test/delete/:id', function(req,res){
@@ -426,4 +454,40 @@ exports.routes = function(app){
     });
   });
 
+  app.get('/test/paths/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+    var test = req.account.tests.id(req.params.id);
+    res.render('test_paths', _.extend(logged_in(req), { test:test }));
+  }); 
+
+  app.post('/test/paths/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+
+    if(req.body.submit == "Cancel, don't save paths") {
+      console.log('cancel, dont save paths');
+      res.redirect('/dashboard');
+      return;
+    }
+    
+    var test = req.account.tests.id(req.params.id);
+    var errors = [];
+    try {
+      JSON.parse(req.body.requests);
+    } catch(e) {
+      errors.push('Ack, the data is in a bad format');
+      res.render('test_paths', _.extend(logged_in(req), { errors:errors, test:test }));
+      return;
+    }
+
+    test.requests = req.body.requests;
+    req.account.save(function(err){
+      if(req.body.submit == "Save changes and keep editing") {
+        console.log('save changes and keep editing');
+        res.render('test_paths', _.extend(logged_in(req), { test:test }));
+      } else {
+        console.log('save changes and go back to dashboard');
+        res.redirect('/dashboard');
+      }
+    });
+  });
 };
