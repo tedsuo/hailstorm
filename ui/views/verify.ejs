@@ -1,0 +1,25 @@
+<h2>Verify {{= website }}</h2>
+
+{{ if(typeof(errors) !== 'undefined' && errors && errors.length) { }}
+  <ul id="errors">
+    {{ for(var i in errors) { }}
+      <li class="error">{{= errors[i] }}</li>
+    {{ } }}
+  </ul>
+{{ } }}
+
+<p>Before you can run a test you must confirm that you actually own the website that you're targeting (otherwise you would be able to <em>pwn</em> the website that you're targeting).</p>
+
+<p>To verify, create a file to your webroot called:<br/>
+<strong>{{= verify_filename }}</strong></p>
+
+<p>It must return a status code 200 and contain the string:<br/>
+<strong>{{= verify_body }}</strong></p>
+
+<p>Once you have uploaded this document, confirm that it's there:<br/>
+<a href="{{= website }}/{{= verify_filename }}" target="_blank">{{= website }}/{{= verify_filename }}</a></p>
+
+<form action="/test/verify/{{= test._id }}" method="post">
+  <input type="submit" name="submit" value="Verify that I own this website" />
+  <input type="submit" name="submit" value="Cancel and go back" />
+</form>

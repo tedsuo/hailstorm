@@ -15,7 +15,7 @@ var app = express.createServer(
   express.logger({ format: ':method :url' }),
   express.cookieParser(),
   express.bodyParser(),
-  express.session({ secret: "magicpants", cookie: { maxAge: 60000 } }),
+  express.session({ secret: "magicpants" }),
   session.load_account()
 );
 
