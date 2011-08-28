@@ -1,0 +1,12 @@
+<h2>Test Settings for {{= test.host }}</h2>
+<form method='post' id='test-run-form' action='/test/run'>
+  <br />
+  <label for='concurrency'>Concurrency</label>
+  <input type='text' id='concurrency' name='concurrency'>
+  <br />
+  <label for='max_requests'>Max Requests</label>
+  <input type='text' id='max_requests' name='max_requests'>
+  <br />
+  <input type='hidden' id='test_id' name='test_id' value={{= test.id}}>
+  <input type='submit' value='Make it Hail!'></input>
+</form>
