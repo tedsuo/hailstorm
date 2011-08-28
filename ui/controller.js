@@ -13,6 +13,13 @@ function force_authentication(req, res) {
   return false;
 }
 
+function get_req_options(){
+  return { 
+    host: "127.0.0.1", 
+    port : 31337
+  };
+}
+
 function logged_in(req) {
   if(req.account)
     return { logged_in:true };
@@ -117,18 +124,19 @@ exports.routes = function(app){
         if(!account) {
           errors.push('Something weird happened, I guess you can\'t login');
         }
-        
-        // if there are errors print them
-        if(errors.length > 0) {
-          render_errors(errors);
-        }
-        // otherwise login
-        else {
-          req.session.account_id = account._id;
-          res.redirect('/dashboard');
-          console.log('login successful! '+JSON.stringify(account));
-        }
       }
+
+      // if there are errors print them
+      if(errors.length > 0) {
+        render_errors(errors);
+      }
+      // otherwise login
+      else {
+        req.session.account_id = account._id;
+        res.redirect('/dashboard');
+        console.log('login successful! '+JSON.stringify(account));
+      }
+
     });
   }); 
 
@@ -242,14 +250,54 @@ exports.routes = function(app){
 
     payload = JSON.stringify(payload); 
     console.log(payload);
+    var create_options = get_req_options();
+    create_options.path = "/create";
+    create_options.method = "POST";
+    var create = http.request(create_options,function(create_res){
+      var data_buffer = '';
+      create_res.on('data', function(data){
+        data_buffer += data;
+      });
+      create_res.on('end', function(){
+        var yeti = JSON.parse(data_buffer);
+        setTimeout(function(){
+          set_options = get_req_options();
+          set_options.path = "/set/" + yeti.yeti_id;
+          set_options.method = "POST";
+          set_options.headers = {"Content-Type" : "application/json"};
+          var set = http.request(set_options, function(set_res){
+            console.log('set begin');
+            var data_buffer = '';
+            set_res.on('data', function(data){
+              data_buffer += data;
+            });
+            set_res.on('end', function(){
+              start_options = get_req_options();
+              start_options.path = "/start/" + yeti.yeti_id;
+              start_options.method = "POST";
+              var start = http.request(start_options, function(start_res){
+                var data_buffer = '';
+                start_res.on('data', function(data){
+                  data_buffer += data;
+                });
+                start_res.on('end', function(){
+                  res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
+                });
+              });
+              start.end();
+            });
+          });
+          set.end(payload);
+        },5000);
+      });
+    });
+    create.end();
+/*
+
+
+    }
     var queue = http.request(
-      { 
-        host: "127.0.0.1", 
-        port : 31337, 
-        method : 'POST', 
-        path : '/set', 
-        headers : {'Content-Type' : "application/json"}
-      }, 
+      req_options, 
       function(set_res){
         set_res.on('end', function(){
           console.log('ok it was set');
@@ -259,8 +307,7 @@ exports.routes = function(app){
       }
     ); 
     queue.write(payload);
-    queue.end();
-    res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
+    queue.end();*/
   });
 
   app.get('/test/verify/:id', function(req,res){
@@ -348,5 +395,44 @@ exports.routes = function(app){
       verification_failed();
     });
     verify_req.end();
+  });
+
+  app.get('/test/delete/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+    var test = req.account.tests.id(req.params.id);
+    res.render('test_delete', _.extend(logged_in(req), { test:test }));
+  }); 
+
+  app.post('/test/delete/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+
+    if(req.body.submit == 'Oops, I want to keep it') {
+      res.redirect('/dashboard');
+      return;
+    }
+
+    var test = req.account.tests.id(req.params.id);
+    test.remove();
+    req.account.save(function(err){
+      res.redirect('/dashboard');
+    });
+  });
+
+  app.get('/test/paths/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+    var test = req.account.tests.id(req.params.id);
+    var requests = [];
+    if(test.requests)
+      requests = JSON.parse(test.requests);
+    res.render('test_paths', _.extend(logged_in(req), { test:test, requests:requests }));
+  }); 
+
+  app.post('/test/paths/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+    /*var test = req.account.tests.id(req.params.id);
+    test.remove();
+    req.account.save(function(err){
+      res.redirect('/dashboard');
+    });*/
   });
 };

@@ -1,0 +1,25 @@
+<h2>Paths for {{= test.protocol }}://{{= test.host }}{{ if((test.protocol == 'http' && test.port != 80) || (test.protocol == 'https' && test.port != 443)) { }}:{{= test.port }}{{ } }}</h2>
+{{ if('undefined' !== typeof errors && errors.length) { }}
+  <ul id="errors">
+    {{ for(var i in errors) { }}
+      <li class="error">{{= errors[i] }}</li>
+    {{ } }}
+  </ul>
+{{ } }}
+
+<table id="paths">
+  {{ for(var i=0; i<requests.length; i++) { }}
+    <tr>
+      <td>
+        <select>
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+        </select>
+      </td>
+      <td>
+        <input type="text" value="{{= requests[i].path }}" />
+      </td>
+    </tr>
+  {{ } }}
+</table>
+

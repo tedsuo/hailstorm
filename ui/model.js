@@ -8,8 +8,7 @@ function hash(password) {
 }
 
 var Yeti = new Schema({
-    host      : String
-  , port      : Number
+    yeti_id   : String
 });
 
 var Test = new Schema({
@@ -19,13 +18,13 @@ var Test = new Schema({
   , verified  : Boolean
   , requests  : String
   , results   : String
+  , yetis     : [Yeti]
 });
 
 var Account = new Schema({
     username  : String
   , password  : { type:String, set:hash }
   , tests     : [Test]
-  , yetis     : [Yeti]
 });
 Account.statics.find_by_username_and_password = function(username, password, cb) {
   this.find({ username:username, password:hash(password) }, function(err,docs){
@@ -33,7 +32,7 @@ Account.statics.find_by_username_and_password = function(username, password, cb)
       cb(err);
     } else {
       if(docs.length == 0) {
-        cb(['user not found']);
+        cb('Invalid login');
       } else {
         cb(null, docs[0]);
       }
