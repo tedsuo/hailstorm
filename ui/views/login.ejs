@@ -3,7 +3,7 @@
 {{ if('undefined' !== typeof errors && errors.length) { }}
   <ul id="errors">
     {{ for(var i in errors) { }}
-      <li class="error">{{ errors[i] }}</li>
+      <li class="error">{{= errors[i] }}</li>
     {{ } }}
   </ul>
 {{ } }}
