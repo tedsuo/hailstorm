@@ -132,9 +132,23 @@ exports.routes = function(app){
   }); 
 
   app.post('/test/new',function(req,res){
-    console.log(req.body.url);
-    console.log(req.body.requests);
-    req.flash('info', 'test created');
-    res.redirect('/dashboard');
+    var paths = req.body.requests.split('\r\n');
+    var requests = [];
+    for( var i in paths) {
+      requests.push({ method : 'GET', path : paths[i], body : '' });
+    }
+    var test = {
+      host : req.body.url,
+      port : 80,
+      protocol : 'http',
+      verified : true,
+      requests : requests,
+      results : []
+    };
+    model.Account.findById(req.session.account._id, function(err, account){
+      account.tests.push(test);
+      account.save();
+      res.redirect('/dashboard');
+    });
   });
 };
