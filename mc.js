@@ -3,10 +3,8 @@ var dnode = require('dnode');
 var express = require('express');
 var _ = require('underscore');
 
-var app = express.createServer();
-app.use(express.bodyParser());
-
 var yetis = {};
+var spawners = {};
 var data = {};
 
 function obj_length(obj){
@@ -17,12 +15,15 @@ function obj_length(obj){
   return x;
 }
 
-var dserver_port = parseInt(process.env.MC_DNODE_PORT) || 1337;
-var dserver = dnode(function (client, conn){
+var yeti_server_port = parseInt(process.env.MC_DNODE_PORT) || 1337;
+var yeti_server = dnode(function (client, conn){
+  
   yetis[conn.id] = {client: client, conn: conn};
+  
   conn.on('end', function(){
     delete yetis[conn.id];
   });
+  
   this.report = function(result){
     console.log(result);
     var rounded_response = Math.round(result.response_time / 100);
@@ -32,8 +33,8 @@ var dserver = dnode(function (client, conn){
     if(data[result.status_code][rounded_start_time][rounded_response] == undefined) data[result.status_code][rounded_start_time][rounded_response] = 0;
     data[result.status_code][rounded_start_time][rounded_response]++;
   }
-}).listen(dserver_port);
-console.log('dnode lisening on ' + dserver_port);
+}).listen(yeti_server_port);
+console.log('yeti_server listening on ' + yeti_server_port);
 
 var mc = {
   set: function(req, res){
@@ -122,6 +123,14 @@ var mc = {
     res.send(JSON.stringify(data));
   }
 }
+
+
+var app = express.createServer();
+app.use(express.bodyParser());
+
+app.get('/create', function(req, res){
+  mc.create(req, res);
+});
 
 app.post('/set', function(req, res){
   mc.set(req, res);
