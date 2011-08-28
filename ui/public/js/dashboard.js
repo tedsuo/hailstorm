@@ -13,7 +13,4 @@ $(function(){
   if($('#test-form #port').val() == '') {
     reset_port();
   }
-
-  $('#test-run-form #start-test').click(){
-  });
 });

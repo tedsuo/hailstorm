@@ -206,7 +206,9 @@ exports.routes = function(app){
       protocol : req.body.protocol,
       verified : false,
       requests : JSON.stringify(requests),
-      results : []
+      results : '',
+      running : false,
+      yeti : ''
     };
     req.account.tests.push(test);
     req.account.save(function(err){
