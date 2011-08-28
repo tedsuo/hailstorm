@@ -26,12 +26,18 @@ var dserver = dnode(function (client, conn){
   this.report = function(result){
     console.log(result);
     var rounded_response = Math.round(result.response_time / 100);
+    var rounded_start_time = Math.ceil(result.start_time / 5000);
+    if(data[result.status_code] == undefined) data[result.status_code] = {};
+    if(data[result.status_code][rounded_start_time] == undefined) data[result.status_code][rounded_start_time] = {};
+    if(data[result.status_code][rounded_start_time][rounded_response] == undefined) data[result.status_code][rounded_start_time][rounded_response] = 0;
+    data[result.status_code][rounded_start_time][rounded_response]++;
   }
 }).listen(dserver_port);
 console.log('dnode lisening on ' + dserver_port);
 
 var mc = {
   set: function(req, res){
+    data = {};
     var target = req.body.target;
     var individual_concurrency = Math.floor(req.body.concurrency / obj_length(yetis));
     var max_requests = req.body.max_requests;
@@ -111,6 +117,9 @@ var mc = {
         }
       });
     }); 
+  },
+  report: function(req, res){
+    res.send(JSON.stringify(data));
   }
 }
 
@@ -128,6 +137,10 @@ app.post('/stop', function(req, res){
 
 app.post('/status', function(req, res){
   mc.status(req, res);
+});
+
+app.get('/report', function(req, res){
+  mc.report(req, res);
 });
 
 app.listen(parseInt(process.env.MC_HTTP_PORT) || 31337, '127.0.0.1');
