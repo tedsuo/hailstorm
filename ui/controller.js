@@ -2,22 +2,18 @@ var _ = require('underscore');
 var model = require('./model');
 
 function force_authentication(req, res) {
-  if(req.session) {
-    if(req.session.account) {
-      return true;
-    }
+  if(req.account) {
+    return true;
   }
   res.redirect('/login');
   return false;
 }
 
 function logged_in(req) {
-  if(req.session) {
-    if(req.session.account)
-      return { logged_in:true };
-    else
-      return { logged_in:false };
-  }
+  if(req.account)
+    return { logged_in:true };
+  else
+    return { logged_in:false };
 }
 
 exports.routes = function(app){
@@ -27,7 +23,7 @@ exports.routes = function(app){
 
   app.get('/dashboard', function(req,res){
     if(!force_authentication(req, res)) return;
-      res.render('dashboard', _.extend(logged_in(req), { account: req.session.account }));
+      res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
   });
 
   app.get('/register',function(req,res){
@@ -68,7 +64,6 @@ exports.routes = function(app){
               render_errors(errors);
             } else {
               req.session.account_id = account._id;
-              req.session.account = account;
               res.redirect('/dashboard');
             }
           });
@@ -111,9 +106,9 @@ exports.routes = function(app){
         }
         // otherwise login
         else {
-          req.session.account = account;
+          req.session.account_id = account._id;
           res.redirect('/dashboard');
-          console.log('login successful! '+JSON.stringify(req.session.account));
+          console.log('login successful! '+JSON.stringify(account));
         }
       }
     });
@@ -132,6 +127,8 @@ exports.routes = function(app){
   }); 
 
   app.post('/test/new',function(req,res){
+    if(!force_authentication(req, res)) return;
+    
     var paths = req.body.requests.split('\r\n');
     var requests = [];
     for( var i in paths) {
@@ -145,10 +142,8 @@ exports.routes = function(app){
       requests : requests,
       results : []
     };
-    model.Account.findById(req.session.account._id, function(err, account){
-      account.tests.push(test);
-      account.save();
-      res.redirect('/dashboard');
-    });
+    req.account.tests.push(test);
+    req.account.save();
+    res.redirect('/dashboard');
   });
 };
