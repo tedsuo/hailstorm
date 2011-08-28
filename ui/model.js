@@ -32,7 +32,7 @@ Account.statics.find_by_username_and_password = function(username, password, cb)
       cb(err);
     } else {
       if(docs.length == 0) {
-        cb(['user not found']);
+        cb('Invalid login');
       } else {
         cb(null, docs[0]);
       }

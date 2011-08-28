@@ -4,15 +4,13 @@ var Yeti = require('./yeti');
 
 var yeti;
 
-// attacking or hibernating
-// total requests
-var client = dnode({
+yeti = new Yeti();
+    
+var mc_client = dnode({
   getId: function(callback){
     callback(null,process.pid);
   },
   set: function(settings, callback){
-    console.log(client.remote);
-    yeti = new Yeti({remote:client.remote});
     yeti.set(settings, callback);
   },
   start: function(callback){
@@ -23,20 +21,24 @@ var client = dnode({
     callback(null, yeti.status);
   },
   status: function(callback){
-    yeti.status(callback);
+    yeti.getStatus(callback);
   }
 });
 
 if(process.env.NODE_ENV == 'production'){
-  client.connect('hailstorm.no.de',1337, function(remote, conn){
-    client.remote = remote;
-    client.remote_conn = conn;
+  mc_client.connect('hailstorm.no.de',1337, function(remote, conn){
+    mc_client.remote = remote;
+    mc_client.remote_conn = conn;
+    yeti.remote = remote;
+    yeti.status = 'awaiting commands';
     console.log('Connected to MC on hailstorm.no.de:1337\n Awaiting Orders...');
   });
 } else {
-  client.connect(1337, function(remote, conn){
-    client.remote = remote;
-    client.remote_conn = conn;
+  mc_client.connect(1337, function(remote, conn){
+    mc_client.remote = remote;
+    mc_client.remote_conn = conn;
+    yeti.remote = remote;
+    yeti.status = 'awaiting commands';    
     console.log('Connected to MC on localhost:1337\n Awaiting Orders...');
   });
 }
