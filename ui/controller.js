@@ -206,7 +206,9 @@ exports.routes = function(app){
       protocol : req.body.protocol,
       verified : false,
       requests : JSON.stringify(requests),
-      results : []
+      results : '',
+      running : false,
+      yeti : ''
     };
     req.account.tests.push(test);
     req.account.save(function(err){
@@ -287,10 +289,16 @@ exports.routes = function(app){
 
   app.post('/test/run', function(req, res){
     if(!force_authentication(req, res)) return;
+
+    if(req.body.submit == "Run away!") {
+      res.redirect('/dashboard');
+      return;
+    }
+
     var test = req.account.tests.id(req.body.test_id);
     var requests = JSON.parse(test.requests);
     if(!test.verified) {
-      render('/dashboard');
+      res.redirect('/dashboard');
       return;
     }
     payload = {
@@ -402,7 +410,7 @@ exports.routes = function(app){
     if(!force_authentication(req, res)) return;
 
     if(req.body.submit == 'Cancel and go back') {
-      res.redirect('dashboard');
+      res.redirect('/dashboard');
       return;
     }
     var test = req.account.tests.id(req.params.id);

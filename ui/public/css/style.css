@@ -262,3 +262,26 @@ body {
   color: #333333;
   border: 1px solid;
 }
+
+#wrapper #run-form .run-setting {
+  margin-bottom: 20px;
+}
+#wrapper #run-form label {
+  width: 150px;
+  display: inline-block;
+}
+#wrapper #run-form .slider {
+  width: 400px;
+  display: inline-block;
+}
+#wrapper #run-form .number {
+  margin-left: 20px;
+  width: 80px;
+  display: inline-block;
+  font-weight: bold;
+  color: #00ff00;
+}
+#wrapper #run-form #start-test {
+  font-size: 2em;
+}
+

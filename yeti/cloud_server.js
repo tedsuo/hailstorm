@@ -39,16 +39,16 @@ var mc_client = dnode({
 
 if(process.env.NODE_ENV == 'production'){
   console.log('Trying to connect to MC on hailstorm.no.de:1337');
-  mc_client.connect('hailstorm.no.de',1338, function(remote, conn){
+  mc_client.connect('hailstorm.no.de',61338, function(remote, conn){
     mc_client.remote = remote;
     mc_client.remote_conn = conn;
-    console.log('Connected to MC on hailstorm.no.de:1337');
+    console.log('Connected to MC on hailstorm.no.de:61338');
   });
 } else {
   console.log('Trying to connect to MC on localhost:1337');
-  mc_client.connect(1338, function(remote, conn){
+  mc_client.connect(61338, function(remote, conn){
     mc_client.remote = remote;
     mc_client.remote_conn = conn;
-    console.log('Connected to MC on localhost:1337');
+    console.log('Connected to MC on localhost:61338');
   });
 }
