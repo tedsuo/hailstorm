@@ -135,7 +135,7 @@ body {
   color: #ff6666;
 }
 
-#wrapper form#register {
+#wrapper form#register, #wrapper form#login {
   text-align: center;
 }
 

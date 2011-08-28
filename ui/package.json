@@ -15,6 +15,7 @@
     "ejs": ">=0.4.3",
     "dnode": ">=0.8.2",
     "mongoose": "~2.0.2",
+    "underscore": ">=1.1.7",
   },
   "devDependencies": {}
 }
