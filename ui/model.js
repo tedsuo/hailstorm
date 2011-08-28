@@ -1,9 +1,7 @@
 var crypto = require('crypto');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var mongo_connection = require('./config').mongo_connection;
-mongoose.connect(mongo_connection);
-//mongoose.connect('mongodb://localhost/hailstorm');
+mongoose.connect(process.env.MONGO_CONNECT || 'mongodb://localhost/hailstorm');
 
 function hash(password) {
   return crypto.createHash('sha1').update(password).digest('hex');
