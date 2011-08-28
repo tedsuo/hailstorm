@@ -10,30 +10,32 @@
 
 <div id='dashboard-container'>
   {{var tests = account.tests}}
-  <table id="tests">
-    <tr>
-      <th>Target</th>
-      <th>Ownership</th>
-      <th>Commands</th>
-    </tr>
-    {{ for(var i = 0; i < tests.length; i++){ }}
-    {{ var verified_string; if(tests[i].verified) { verified_string = '<span class="verified">verified</span>'; } else { verified_string = '<span class="unverified"><a href="/test/verify/'+tests[i]._id+'">verify now</a></span>'; } }}
+  {{ if(tests.length) { }}
+    <table id="tests">
       <tr>
-        <td>{{= tests[i].protocol }}://{{= tests[i].host }}{{ if((tests[i].protocol == 'http' && tests[i].port != 80) || (tests[i].protocol == 'https' && tests[i].port != 443)) { }}:{{= tests[i].port }}{{ } }}</td>
-        <td>{{- verified_string }}</td>
-        <td class="commands">
-          <a href='/test/paths/{{= tests[i]._id }}'>paths</a>
-          {{ if(tests[i].verified) { }}
-            <a href='/test/run/{{= tests[i]._id }}'>run</a>
-          {{ } }}
-          <a href='/test/delete/{{= tests[i]._id }}'>del</a>
-          {{ if(tests[i].results) { }}
-            <a href='/test/results/{{= tests[i]._id }}'>results</a>
-          {{ } }}
-        </td>
+        <th>Target</th>
+        <th>Ownership</th>
+        <th>Commands</th>
       </tr>
-    {{ } }}
-  </table>
+      {{ for(var i = 0; i < tests.length; i++){ }}
+      {{ var verified_string; if(tests[i].verified) { verified_string = '<span class="verified">verified</span>'; } else { verified_string = '<span class="unverified"><a href="/test/verify/'+tests[i]._id+'">verify now</a></span>'; } }}
+        <tr>
+          <td>{{= tests[i].protocol }}://{{= tests[i].host }}{{ if((tests[i].protocol == 'http' && tests[i].port != 80) || (tests[i].protocol == 'https' && tests[i].port != 443)) { }}:{{= tests[i].port }}{{ } }}</td>
+          <td>{{- verified_string }}</td>
+          <td class="commands">
+            <a href='/test/paths/{{= tests[i]._id }}'>paths</a>
+            {{ if(tests[i].verified) { }}
+              <a href='/test/run/{{= tests[i]._id }}'>run</a>
+            {{ } }}
+            <a href='/test/delete/{{= tests[i]._id }}'>del</a>
+            {{ if(tests[i].results) { }}
+              <a href='/test/results/{{= tests[i]._id }}'>results</a>
+            {{ } }}
+          </td>
+        </tr>
+      {{ } }}
+    </table>
+  {{ } }}
 
   <h3>Add a Test</h3>
   

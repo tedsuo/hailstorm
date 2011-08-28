@@ -124,18 +124,19 @@ exports.routes = function(app){
         if(!account) {
           errors.push('Something weird happened, I guess you can\'t login');
         }
-        
-        // if there are errors print them
-        if(errors.length > 0) {
-          render_errors(errors);
-        }
-        // otherwise login
-        else {
-          req.session.account_id = account._id;
-          res.redirect('/dashboard');
-          console.log('login successful! '+JSON.stringify(account));
-        }
       }
+
+      // if there are errors print them
+      if(errors.length > 0) {
+        render_errors(errors);
+      }
+      // otherwise login
+      else {
+        req.session.account_id = account._id;
+        res.redirect('/dashboard');
+        console.log('login successful! '+JSON.stringify(account));
+      }
+
     });
   }); 
 
@@ -413,4 +414,21 @@ exports.routes = function(app){
     });
   });
 
+  app.get('/test/paths/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+    var test = req.account.tests.id(req.params.id);
+    var requests = [];
+    if(test.requests)
+      requests = JSON.parse(test.requests);
+    res.render('test_paths', _.extend(logged_in(req), { test:test, requests:requests }));
+  }); 
+
+  app.post('/test/paths/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+    /*var test = req.account.tests.id(req.params.id);
+    test.remove();
+    req.account.save(function(err){
+      res.redirect('/dashboard');
+    });*/
+  });
 };
