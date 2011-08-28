@@ -8,7 +8,7 @@ var yeti;
 // total requests
 var client = dnode({
   getId: function(callback){
-    callback(null, process.pid);
+    callback(null,process.pid);
   },
   set: function(settings, callback){
     console.log(client.remote);

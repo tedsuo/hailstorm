@@ -70,12 +70,11 @@ Yeti.prototype.stop = function() {
 
 Yeti.prototype.status = function(callback) {
   if(this.settings.max_requests == this.requests_sent) {
-      this.status = 'catching breath';
+    this.status = 'catching breath';
   }
-
-  callback({
-      status: this.status,
-      requests_sent: this.requests_sent
+  callback(null,{
+    status: this.status,
+    requests_sent: this.requests_sent
   });
 };
 
