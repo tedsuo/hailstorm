@@ -7,6 +7,7 @@ var app = express.createServer();
 app.use(express.bodyParser());
 
 var yetis = {};
+var data = {};
 
 function obj_length(obj){
   var x = 0;
@@ -22,7 +23,9 @@ var dserver = dnode(function (client, conn){
   conn.on('end', function(){
     delete yetis[conn.id];
   });
-  this.finished = function(results){
+  this.report = function(result){
+    console.log(result);
+    var rounded_response = Math.round(result.response_time / 100);
   }
 }).listen(dserver_port);
 console.log('dnode lisening on ' + dserver_port);
