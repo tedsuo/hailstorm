@@ -5,7 +5,6 @@ var _ = require('underscore');
 
 var yetis = {};
 var cloud = {};
-var data = {};
 
 function obj_length(obj){
   var x = 0;
@@ -17,7 +16,7 @@ function obj_length(obj){
 
 var yeti_server_port = parseInt(process.env.YETI_DNODE_PORT) || 1337;
 var yeti_server = dnode(function (client, conn){
-  var yeti = {client: client, conn: conn}
+  var yeti = {client: client, conn: conn, data:{}}
   conn.on('ready',function(){
     client.getId( function(err,id){
       console.log('yeti '+id+' arrived');
@@ -35,10 +34,16 @@ var yeti_server = dnode(function (client, conn){
     console.log(result);
     var rounded_response = Math.round(result.response_time / 100);
     var rounded_start_time = Math.ceil(result.start_time / 5000);
-    if(data[result.status_code] == undefined) data[result.status_code] = {};
-    if(data[result.status_code][rounded_start_time] == undefined) data[result.status_code][rounded_start_time] = {};
-    if(data[result.status_code][rounded_start_time][rounded_response] == undefined) data[result.status_code][rounded_start_time][rounded_response] = 0;
-    data[result.status_code][rounded_start_time][rounded_response]++;
+    if(yeti.data[result.status_code] == undefined){
+      yeti.data[result.status_code] = {};
+    }
+    if(yeti.data[result.status_code][rounded_start_time] == undefined){
+      yeti.data[result.status_code][rounded_start_time] = {};
+    }
+    if(yeti.data[result.status_code][rounded_start_time][rounded_response] == undefined){
+      yeti.data[result.status_code][rounded_start_time][rounded_response] = 0;
+    }
+    yeti.data[result.status_code][rounded_start_time][rounded_response]++;
   }
 }).listen(yeti_server_port);
 console.log('yeti server listening on ' + yeti_server_port);
@@ -57,6 +62,10 @@ var cloud_server = dnode(function (client, conn){
 console.log('cloud server listening on ' + cloud_server_port);
 
 var mc = {
+  list: function(req, res){
+    res.send(JSON.stringify(Object.keys(yetis)));
+  },
+  
   create: function(req,res){
     cloud.client.create(function(err, yeti_id){
       res.send(JSON.stringify({yeti_id:yeti_id}));
@@ -64,7 +73,13 @@ var mc = {
   },
 
   destroy: function(req,res){
-    cloud.client.destroy(req.params['id'],function(err){
+    var yeti = yetis[req.params.id];  
+    if(!yeti){    
+      res.writeHead(500);
+      res.end('yeti does not exit');
+      return;
+    }
+    cloud.client.destroy(yeti.id,function(err){
       if(err){
         res.writeHead(500);
         res.end(err.message);
@@ -75,6 +90,12 @@ var mc = {
   },
     
   set: function(req, res){
+    var yeti = yetis[req.params.id];  
+    if(!yeti){    
+      res.writeHead(500);
+      res.end('yeti does not exit');
+      return;
+    }
     data = {};
 //    var individual_concurrency = Math.floor(req.body.concurrency / obj_length(yetis));
     var target = req.body.target;
@@ -83,7 +104,6 @@ var mc = {
     target.concurrency = req.body.concurrency;
     var target_json = JSON.stringify(target);
     var res_obj = {};
-    var yeti = yetis[req.params.id];
     yeti.client.set(target_json, function(err, status){
       res_obj[yeti.id] = {
         status: status
@@ -116,55 +136,62 @@ var mc = {
   },
   
   stop: function(req, res){
-    var yetis_to_stop = {};
-    for(i in yetis){
-      if(yetis[i].status == "attacking"){
-        yetis_to_stop[i] = yetis[i];
-      }
-    }
-    var res_obj = {};
-    _.each(yetis_to_stop, function(yeti_to_stop, id){
-      yeti_to_stop.client.stop(function(err, status){
-        res_obj[yeti_to_stop.conn.stream.remoteAddress+':'+yeti_to_stop.conn.stream.remotePort] = {
-          status: status
-        };
-        yeti_to_stop.status = status;
-        if(obj_length(res_obj) == obj_length(yetis_to_stop)){
-          res.send(JSON.stringify(res_obj));
-        }
-      });
+    var yeti = yetis[req.params.id];
+    if(!yeti){    
+      res.writeHead(500);
+      res.end('yeti does not exit');
+      return;
+    }    
+    yeti.client.stop(function(err, status){
+      res_obj[yeti.id] = {
+        status: status
+      };
+      yeti.status = status;
+      res.send(JSON.stringify(res_obj));
     });
   },
   
   status: function(req, res){
-    var yetis_to_status = {};
-    for(i in yetis){
-      if(yetis[i].status == "attacking"){
-        yetis_to_status[i] = yetis[i];
-      }
-    }
+    var yeti = yetis[req.params.id];
+    if(!yeti){    
+      res.writeHead(500);
+      res.end('yeti does not exit');
+      return;
+    }    
     var res_obj = {};
-    _.each(yetis_to_status, function(yeti_to_status, id){
-      yeti_to_status.client.status(function(err, status){
-        res_obj[yeti_to_status.conn.stream.remoteAddress+':'+yeti_to_status.conn.stream.remotePort] = {
-          status: status
-        };
-        yeti_to_status.status = status;
-        if(obj_length(res_obj) == obj_length(yetis_to_status)){
-          res.send(JSON.stringify(res_obj));
-        }
-      });
-    }); 
+    console.log(yeti);
+    yeti.client.status(function(err, status){
+      console.log('status');
+      res_obj[yeti.id] = {
+        status: status
+      };
+      yeti.status = status;
+      res.send(JSON.stringify(res_obj));
+    });
   },
   
   report: function(req, res){
-    res.send(JSON.stringify(data));
+    var yeti = yetis[req.params.id];
+    if(!yeti){    
+      res.writeHead(500);
+      res.end('yeti does not exit');
+      return;
+    }    
+    if(!yeti){
+      res.writeHead(200);
+      res.end();
+    }
+    res.send(JSON.stringify(yeti.data));
   }
 }
 
 
 var app = express.createServer();
 app.use(express.bodyParser());
+
+app.get('/', function(req, res){
+  mc.list(req, res);
+});
 
 app.post('/create', function(req, res){
   mc.create(req, res);
@@ -187,7 +214,7 @@ app.post('/stop/:id', function(req, res){
   mc.stop(req, res);
 });
 
-app.post('/status/:id', function(req, res){
+app.get('/status/:id', function(req, res){
   mc.status(req, res);
 });
 
