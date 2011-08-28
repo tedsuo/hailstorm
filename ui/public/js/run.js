@@ -1,7 +1,7 @@
 $(function(){
   $('#concurrency-slider').slider({
     min: 1,
-    max: 5000,
+    max: 1000,
     slide: function(event, ui){
       $('#concurrency-number').html(ui.value);
     },
@@ -14,7 +14,7 @@ $(function(){
   
   $('#max-requests-slider').slider({
     min: 1,
-    max: 10000,
+    max: 5000,
     slide: function(event, ui){
       $('#max-requests-number').html(ui.value);
     },
@@ -23,6 +23,6 @@ $(function(){
       $('#max-requests-number').html(ui.value);
     }
   });
-  $('#max-requests-slider').slider('value', 5000);
+  $('#max-requests-slider').slider('value', 2500);
 
 });
