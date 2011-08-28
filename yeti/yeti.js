@@ -57,6 +57,7 @@ Yeti.prototype.start = function(callback){
     this.attack();
   }
   this.initial_start_time = new Date().getTime();
+  this.remote.updateYetiStatus(this.status);
 };
 
 Yeti.prototype.queue_attack = function(){
@@ -66,6 +67,7 @@ Yeti.prototype.queue_attack = function(){
 Yeti.prototype.stop = function() {
   this.status = 'hibernating';
   if(this.agent) this.agent.requests = {};
+  this.remote.finished();
 };
 
 Yeti.prototype.getStatus = function(callback) {
@@ -142,7 +144,7 @@ Yeti.prototype.on_request_end = function(request_id,res){
   
   this.requests_sent++;  
   if(this.settings.max_requests == this.requests_sent) {
-    this.status = 'hibernating';
+    this.stop();
   }
     
   // log result

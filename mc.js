@@ -2,6 +2,8 @@ var http = require('http');
 var dnode = require('dnode');
 var express = require('express');
 var _ = require('underscore');
+var mongoose = require('mongoose');
+var model = require('./ui/model');
 
 var yetis = {};
 var cloud = {};
@@ -14,9 +16,9 @@ function obj_length(obj){
   return x;
 }
 
-var yeti_server_port = parseInt(process.env.YETI_DNODE_PORT) || 61337;
+var yeti_server_port = parseInt(process.env.YETI_DNODE_PORT) || 1337;
 var yeti_server = dnode(function (client, conn){
-  var yeti = {client: client, conn: conn, data:{}, max_responses: 0};
+  var yeti = {client: client, conn: conn, data:{}}
   conn.on('ready',function(){
     client.getId( function(err,id){
       console.log('yeti '+id+' arrived');
@@ -43,18 +45,54 @@ var yeti_server = dnode(function (client, conn){
       yeti.data[result.status_code][rounded_start_time][rounded_response] = 0;
     }
     yeti.data[result.status_code][rounded_start_time][rounded_response]++;
-    if(yeti.data[result.status_code][rounded_start_time][rounded_response] > yeti.max_responses){
-      yeti.max_responses = yeti.data[result.status_code][rounded_start_time][rounded_response];
-    }
   }
   
   this.updateYetiStatus = function(status){
     yeti.status = status;
+    model.Test.findById(yeti.test_id, function(err, test) {
+      if(err){
+        console.log(err);
+        return;
+      }
+      if(status == 'attacking'){
+        test.running = true;
+      } else {
+        test.running = false;
+      }
+      test.save(function(err){
+        if(err){
+          console.log(err);
+        }
+      });
+    });
+  };
+  
+  this.finished = function(){
+    model.Test.findById(yeti.test_id, function(err, test) {
+      if(err){
+        console.log(err);
+        return;
+      }
+      test.results = JSON.stringify(yeti.data);
+      test.running = false;
+      test.save(function(err){
+        if(err){
+          console.log(err);
+        }
+        cloud.client.destroy(yeti.id,function(err){
+          if(err){
+            console.log('couldn\'t kill yeti'+yeti.id);
+          } else {
+            console.log('killed yeti '+yeti.id);
+          }
+        });        
+      });
+    });    
   };
 }).listen(yeti_server_port);
 console.log('yeti server listening on ' + yeti_server_port);
 
-var cloud_server_port = parseInt(process.env.CLOUD_DNODE_PORT) || 61338;
+var cloud_server_port = parseInt(process.env.CLOUD_DNODE_PORT) || 1338;
 var cloud_server = dnode(function (client, conn){
   console.log('cloud arrived');  
   cloud = {client: client, conn: conn};
@@ -102,15 +140,16 @@ var mc = {
       res.end('yeti does not exit');
       return;
     }
-    data = {};
-//    var individual_concurrency = Math.floor(req.body.concurrency / obj_length(yetis));
+
+    yeti.test_id = req.body.test_id;
+    yeti.data = {};
+        
     var target = req.body.target;
-    var max_requests = req.body.max_requests;
-    target.max_requests = max_requests;
+    target.max_requests = req.body.max_requests;
     target.concurrency = req.body.concurrency;
-    var target_json = JSON.stringify(target);
-    var res_obj = {};
-    yeti.client.set(target_json, function(err, status){
+
+    var res_obj = {};    
+    yeti.client.set(JSON.stringify(target), function(err, status){
       res_obj[yeti.id] = {
         status: status
       };
@@ -184,7 +223,7 @@ var mc = {
       res.writeHead(200);
       res.end();
     }
-    res.send(JSON.stringify({data: yeti.data, max_responses: yeti.max_responses}));
+    res.send(JSON.stringify(yeti.data));
   }
 }
 
