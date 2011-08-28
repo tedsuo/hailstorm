@@ -32,14 +32,14 @@ Yeti.prototype.get_protocol = function() {
 
 Yeti.prototype.start = function(callback){
   this.settings.status = 'attacking';
+  console.log(this.settings.status);
+  callback(null, this.settings.status);
   this.num_requests = 0;
   this.request_log = [];
   this.requests_sent = 0;
   while(this.num_requests < this.settings.max_requests) {
     this.settings.requests.forEach(this.attack.bind(this));
   }
-  console.log(this.settings.status);
-  callback(null, this.settings.status);
 };
 
 Yeti.prototype.stop = function() {
