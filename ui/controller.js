@@ -349,4 +349,26 @@ exports.routes = function(app){
     });
     verify_req.end();
   });
+
+  app.get('/test/delete/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+    var test = req.account.tests.id(req.params.id);
+    res.render('test_delete', _.extend(logged_in(req), { test:test }));
+  }); 
+
+  app.post('/test/delete/:id', function(req,res){
+    if(!force_authentication(req, res)) return;
+
+    if(req.body.submit == 'Oops, I want to keep it') {
+      res.redirect('/dashboard');
+      return;
+    }
+
+    var test = req.account.tests.id(req.params.id);
+    test.remove();
+    req.account.save(function(err){
+      res.redirect('/dashboard');
+    });
+  });
+
 };
