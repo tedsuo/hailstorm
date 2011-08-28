@@ -16,12 +16,12 @@
       <th>Verified</th>
       <th></th>
     </tr>
-  {{ for(var i in account.tests) { }}
-    <tr>
-      <td>{{= account.tests[i].url }}</td>
-      <td>{{= account.tests[i].verified }}</td>
-      <td><a href='/dashboard'>run!</td>
-    </tr>
+    {{ for(var i = 0; i < tests.length; i++){ }}
+      <tr>
+        <td>{{= tests[i].host }}</td>
+        <td>{{= tests[i].verified }}</td>
+        <td><a href='/dashboard'>run!</td>
+      </tr>
     {{ } }}
   </table>
   <h3> Add a Test </h3>
