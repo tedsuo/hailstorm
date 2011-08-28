@@ -2,7 +2,6 @@ var express = require('express');
 var mongoose = require('mongoose');
 var controller = require('./controller');
 var model = require('./model');
-var session = require('./session');
 
 if(process.env.NODE_ENV == 'production'){
   port = 80;
@@ -12,10 +11,10 @@ if(process.env.NODE_ENV == 'production'){
 
 var app = express.createServer(
   express.static(__dirname + '/public'),
+  express.logger({ format: ':method :url' }),
   express.cookieParser(),
   express.bodyParser(),
-  express.session({ secret: "magicpants" }),
-  session.attach_to_req()
+  express.session({ secret: "magicpants", cookie: { maxAge: 60000 } })
 );
 
 app.set('view engine', 'ejs');
