@@ -2,7 +2,7 @@ var chart;
 
 function reduce(data){
   ret_series = [];
-  $.each(data.data, function(status, status_obj){
+  $.each(data.report, function(status, status_obj){
     $.each(status_obj, function(start_time, start_time_obj){
       $.each(start_time_obj, function(response_time, num_responses){
         req_obj = {
