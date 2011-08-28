@@ -89,7 +89,7 @@ var yeti_server = dnode(function (client, conn){
       });
     });    
   };
-}).listen(yeti_server_port);
+}).listen(yeti_server_port, '0.0.0.0');
 console.log('yeti server listening on ' + yeti_server_port);
 
 var cloud_server_port = parseInt(process.env.CLOUD_DNODE_PORT) || 1338;
@@ -102,7 +102,7 @@ var cloud_server = dnode(function (client, conn){
     cloud = undefined;
   });
   
-}).listen(cloud_server_port);
+}).listen(cloud_server_port, '0.0.0.0');
 console.log('cloud server listening on ' + cloud_server_port);
 
 var mc = {
