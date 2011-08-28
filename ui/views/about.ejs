@@ -1,2 +1,20 @@
-<h2>What makes the yetis so angry?</h2>
-<p>Coming soon.</p>
+<h2>What makes the yetis hurl their icy snowballs?</h2>
+
+<p>Hailstorm is written completely in javascript using <a href="http://nodejs.org/">Node.js</a> and contains many different parts that work together.</p>
+
+<h3>Web Application (a.k.a. UI)</h3>
+
+<p>You're using the Hailstorm web app right now. It handles account creation, lets you set up load tests and verifies that you own the website you're testing. Each test has a protocol (http or https), a port, a domain name, a list of GET or POST requests to make, a max number of requests for each yeti to make, and how many requests the yetis should collectively make at one time. You can then start (and stop before it's done) tests, and when they finish you can get details and charts about how it turned out. But the UI hardly does any of this magic. It talks to Master Control that does the real facilitation work.</p>
+
+<h3>Master Control (a.k.a. MC)</h3>
+
+<p>MC takes instructions from UI and carries them out. It is able to carry out instructions from multiple users at the same time. It starts new yetis with instructions, receives regular updates from them and forwards them back to UI, and stops them when their work is done. We didn't have time to implement it, but we could also write a command-line interface that talks to MC in the same way UI does. MC is similar to a <a href="https://secure.wikimedia.org/wikipedia/en/wiki/Botnet">botnet</a>'s <a href="https://secure.wikimedia.org/wikipedia/en/wiki/Command-and-control">command and control</a> center.</p>
+
+<h3>Yetis, the ice monsters that attack</h3>
+
+<p>A yeti is a dangerous beast. He hibernates in the deepest corners of the internet until he is summoned by the Master Control. Like a <a href="https://secure.wikimedia.org/wikipedia/en/wiki/Zombie_computer">zombie</a>, he makes no decisions of his own, but only does what his master tells him to. He is given a target, a list of requests to make, a maximum total number of requests, and a concurrency. He is so wild that he must run on the unstable version of Node.js (v0.5.5 unstable as of this writing) because he relies on the <a href="http://nodejs.org/docs/v0.5.5/api/http.html#event_socket_">http socket event</a> that isn't implemented yet in the stable version. He sets the max number of open sockets he can use at a time to the concurrency and then starts pounding the target with http requests. He makes sure that requests are getting made as efficiently as possible, but also doesn't run out of memory queueing up millions of sockets at the start command. With every http snowball he hurls he screeches loudly in his <a href="https://secure.wikimedia.org/wikipedia/en/wiki/User_agent">user agent</a> string: <strong>"I AM YETI AND YOU ARE STUCK IN HAILSTORM"</strong></p>
+
+<h3>And how is this useful?</h3>
+
+<p>Websites are brittle. They crash and die from load when they get <a href="http://boingboing.net/">BoingBoing</a>'ed, <a href="http://slashdot.org/">Slashdot</a>'ed, or <a href="http://www.reddit.com/">Reddit</a>'ed. Groups like Anonymous and assholes like th3j35t3r DDOS websites to make political statements. Most websites are entirely unprepared for this, and monitoring software sends sysadmins text messages at all hours of the night because of it. Software like Hailstorm can help you figure out what parts of your website need hardening so they can survive massive amounts of concurrent requests.</p>
+
