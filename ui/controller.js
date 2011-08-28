@@ -13,6 +13,13 @@ function force_authentication(req, res) {
   return false;
 }
 
+function get_req_options(){
+  return { 
+    host: "127.0.0.1", 
+    port : 31337
+  };
+}
+
 function logged_in(req) {
   if(req.account)
     return { logged_in:true };
@@ -198,14 +205,27 @@ exports.routes = function(app){
 
     payload = JSON.stringify(payload); 
     console.log(payload);
+    var create_options = get_req_options();
+    create_options.path = "/create";
+    create_options.method = "POST";
+    console.log(create_options);
+    var create = http.request(create_options,function(create_res){
+      var data_buffer = '';
+      res.on('data', function(data){
+        data_buffer += data;
+      });
+      res.on('end', function(){
+        var yeti = JSON.parse(data_buffer);
+        console.log(yeti);
+      });
+    });
+    create.end();
+/*
+
+
+    }
     var queue = http.request(
-      { 
-        host: "127.0.0.1", 
-        port : 31337, 
-        method : 'POST', 
-        path : '/set', 
-        headers : {'Content-Type' : "application/json"}
-      }, 
+      req_options, 
       function(res){
         res.on('data', function(){
           var start = http.request( { host: "127.0.0.1", port : 31337, method : 'POST', path : '/start', });
@@ -214,7 +234,7 @@ exports.routes = function(app){
       }
     ); 
     queue.write(payload);
-    queue.end();
+    queue.end();*/
     res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
   });
 
