@@ -14,7 +14,7 @@ function obj_length(obj){
   return x;
 }
 
-var yeti_server_port = parseInt(process.env.YETI_DNODE_PORT) || 1337;
+var yeti_server_port = parseInt(process.env.YETI_DNODE_PORT) || 61337;
 var yeti_server = dnode(function (client, conn){
   var yeti = {client: client, conn: conn, data:{}, max_responses: 0};
   conn.on('ready',function(){
@@ -54,7 +54,7 @@ var yeti_server = dnode(function (client, conn){
 }).listen(yeti_server_port);
 console.log('yeti server listening on ' + yeti_server_port);
 
-var cloud_server_port = parseInt(process.env.CLOUD_DNODE_PORT) || 1338;
+var cloud_server_port = parseInt(process.env.CLOUD_DNODE_PORT) || 61338;
 var cloud_server = dnode(function (client, conn){
   console.log('cloud arrived');  
   cloud = {client: client, conn: conn};
