@@ -6,7 +6,7 @@ yetis = [];
 
 var mc_client = dnode({
   create: function(callback){
-    var yeti = spawn('node',
+    var yeti = spawn('/opt/node-0.5.5/bin/node',
       [__dirname+'/yeti_server.js'],{
       env: process.env
     });
