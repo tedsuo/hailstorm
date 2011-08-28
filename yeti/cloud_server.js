@@ -1,15 +1,31 @@
 //vim: ts=2 sw=2 expandtab
 var dnode = require('dnode');
-var Yeti = require('./yeti');
+var spawn = require('child_process').spawn;
 
-var yeti;
+yetis = [];
 
 // attacking or hibernating
 // total requests
 var client = dnode({
   create: function(callback){
-    console.log('create!!');
-    callback(null,'create');
+    var yeti = spawn('node',[__dirname+'/yeti_server.js']);
+    yeti.yeti_id = yeti.pid;
+    yetis[yeti.yeti_id] = yeti;
+    console.log('created yeti '+yeti.yeti_id);
+    callback(null,yeti.pid);
+    yeti.on('exit',function(){
+      console.log('yeti '+yeti.yeti_id+' died');
+      delete yetis[yeti.yeti_id];
+    });
+  },
+  
+  destroy: function(yeti_id,callback){
+    if(yetis[yeti_id]){
+      yetis[yeti_id].kill();
+      callback(null,'success');
+    } else {
+      callback(new Error('yeti '+yeti_id+' does not exit'));
+    }
   }
 });
 
