@@ -25,6 +25,16 @@ exports.routes = function(app){
     res.render('index', logged_in(req));
   });
 
+  app.get('/dashboard', function(req,res){
+    if(!req.account) {
+      req.account = 
+      res.render('dashboard',{ account : req.account});
+      //res.render('login', { errors: ['you must first log in']});
+    } else  {
+      res.render('dashboard',{ account : req.account});
+    }
+  });
+
   app.get('/register',function(req,res){
     res.render('register', logged_in(req));
   });
