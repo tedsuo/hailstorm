@@ -15,8 +15,9 @@ var client = dnode({
   start:  function(callback){
     yeti.start(callback);
   },
-  stop:   function(){
+  stop:   function(callback){
     yeti.stop();
+    callback(null, yeti.status);
   },
   status: function(callback){
     yeti.status(callback);
