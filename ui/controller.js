@@ -259,31 +259,35 @@ exports.routes = function(app){
       });
       create_res.on('end', function(){
         var yeti = JSON.parse(data_buffer);
-        set_options = get_req_options();
-        set_options.path = "/set/" + yeti.yeti_id;
-        set_options.method = "POST";
-        set_options.headers = {"Content-Type" : "application/json"};
-        var set = http.request(set_options, function(set_res){
-          var data_buffer = '';
-          set.on('data', function(data){
-            data_buffer += data;
-          });
-          set.on('end', function(){
-            start_options = get_req_options();
-            start_options.path = "/start/" + yeti.yeti_id;
-            start_options.method = "POST";
-            var start = http.request(start_options, function(start_res){
-              var data_buffer = '';
-              start.on('data', function(data){
-                data_buffer += data;
+        setTimeout(function(){
+          set_options = get_req_options();
+          set_options.path = "/set/" + yeti.yeti_id;
+          set_options.method = "POST";
+          set_options.headers = {"Content-Type" : "application/json"};
+          var set = http.request(set_options, function(set_res){
+            console.log('set begin');
+            var data_buffer = '';
+            set_res.on('data', function(data){
+              data_buffer += data;
+            });
+            set_res.on('end', function(){
+              start_options = get_req_options();
+              start_options.path = "/start/" + yeti.yeti_id;
+              start_options.method = "POST";
+              var start = http.request(start_options, function(start_res){
+                var data_buffer = '';
+                start_res.on('data', function(data){
+                  data_buffer += data;
+                });
+                start_res.on('end', function(){
+                  res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
+                });
               });
-              start.on('end', function(){
-                res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
-              });
+              start.end();
             });
           });
-        });
-        set.end(payload);
+          set.end(payload);
+        },5000);
       });
     });
     create.end();
