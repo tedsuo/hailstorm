@@ -234,11 +234,8 @@ exports.routes = function(app){
   app.get('/test/data/:id',function(req, res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.params.id);
-    console.log(req.params);
-    console.log("daaaaaaaaaaaaaa");
-    console.log(test);
-    if(!test.verified){
-      render('/dashboard');
+    if(!test.verified || !test.running){
+      res.send('permission denied');
       return;
     }
     yeti_id = test.yeti;
@@ -284,7 +281,14 @@ exports.routes = function(app){
   }
 
   app.get('/test/report/:id', function(req, res){
-        res.render('test_report',_.extend(logged_in(req),{id: req.params.id})); 
+    if(!force_authentication(req, res)) return;
+    console.log('/test/report/:id '+JSON.stringify(req.params));
+    var test = req.account.tests.id(req.params.id);
+    if(!test.running) {
+      res.redirect('/dashboard');
+      return;
+    }
+    res.render('test_report',_.extend(logged_in(req),{id: req.params.id})); 
   });
 
   app.post('/test/run', function(req, res){
