@@ -14,7 +14,6 @@
     "express": ">=2.4.6",
     "ejs": ">=0.4.3",
     "dnode": ">=0.8.2",
-    "async": ">=0.1.9",
     "underscore": ">=1.1.7"
   },
   "devDependencies": {}

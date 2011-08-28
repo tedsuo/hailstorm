@@ -1,0 +1,20 @@
+{{ if ('undefined' !== typeof errors && errors.length) { }}
+  <ul id=errors>
+    {{ each error in errors { }}
+      <li id="error"> {{= error}} </li>
+    {{ } }}
+  </ul>
+{{ { }}
+<form action='/login' method='post'>
+  <div id='login'>
+    <label for='username'> Username </label>
+    <input type='text' name='username' value='username'></input>
+  </div>
+  <div id='password'>
+    <label for='password'> Password </label>
+    <input type='password' name='password' value='password'></input>
+  </div>
+  <div id='submit'>
+    <input type='submit'>Login</input>
+  </div>  
+</form>

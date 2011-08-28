@@ -25,9 +25,15 @@ body {
     font-style: italic;
 }
 
-#wrapper #follow {
+#wrapper #vote {
     position: absolute;
     top: 450px;
+    left: 75px;
+}
+
+#wrapper #follow {
+    position: absolute;
+    top: 500px;
     left: 70px;
     width: 130px;
     font-family: SVBasicManualBook;
@@ -37,7 +43,7 @@ body {
 
 #wrapper #twitter {
     position: absolute;
-    top: 480px;
+    top: 530px;
     left: 75px;
     width: 130px;
 }
@@ -76,9 +82,25 @@ body {
     padding: 0;
 }
 
+#wrapper #nav {
+    position: absolute;
+    top: 220px;
+    left: 280px;
+    width: 680px;
+}
+
+#wrapper #nav a {
+    background-color: #008cff;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 8px 12px;
+    font-family: SVBasicManualBook;
+    font-size: 18px;
+}
+
 #wrapper #content {
     position: absolute;
-    top: 210px;
+    top: 250px;
     left: 280px;
     width: 680px;
 }
