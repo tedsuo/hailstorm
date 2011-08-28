@@ -1,0 +1,14 @@
+<h2>Are you sure you want to delete this test?</h2>
+
+<p><strong>Target:</strong><br/>
+{{= test.protocol }}://{{= test.host }}{{ if((test.protocol == 'http' && test.port != 80) || (test.protocol == 'https' && test.port != 443)) { }}:{{= test.port }}{{ } }}</p>
+<p><strong>Requests:</strong><br>
+{{ for(var i=0; i<test.requests; i++) { }}
+{{= test.requests[i].method }} {{= test.requests[i].path }} {{= test.requests[i].body }}<br/>
+{{ } }}
+</p>
+
+<form method="post" action="/test/delete/{{= test._id }}">
+  <input type="submit" name="submit" value="Delete test">
+  <input type="submit" name="submit" value="Oops, I want to keep it">
+</form>

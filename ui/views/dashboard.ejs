@@ -1,3 +1,4 @@
+<script src="/js/dashboard.js"></script>
 <h2>Dashboard for {{= account.username}}</h2>
 {{ if('undefined' !== typeof errors && errors.length) { }}
   <ul id="errors">
@@ -9,33 +10,47 @@
 
 <div id='dashboard-container'>
   {{var tests = account.tests}}
-  You have {{= tests.length}} tests in your queue.
-  <table id='tests'>
+  <table id="tests">
     <tr>
-      <th>URL</th>
-      <th>Verified</th>
-      <th></th>
+      <th>Target</th>
+      <th>Ownership</th>
+      <th>Commands</th>
     </tr>
     {{ for(var i = 0; i < tests.length; i++){ }}
     {{ var verified_string; if(tests[i].verified) { verified_string = '<span class="verified">verified</span>'; } else { verified_string = '<span class="unverified"><a href="/test/verify/'+tests[i]._id+'">verify now</a></span>'; } }}
       <tr>
-        <td>{{= tests[i].host }}</td>
+        <td>{{= tests[i].protocol }}://{{= tests[i].host }}{{ if((tests[i].protocol == 'http' && tests[i].port != 80) || (tests[i].protocol == 'https' && tests[i].port != 443)) { }}:{{= tests[i].port }}{{ } }}</td>
         <td>{{- verified_string }}</td>
-        <td><a href='/test/run/{{= tests[i]._id }}'>run!</td>
+        <td class="commands">
+          <a href='/test/paths/{{= tests[i]._id }}'>paths</a>
+          <a href='/test/run/{{= tests[i]._id }}'>run</a>
+          <a href='/test/delete/{{= tests[i]._id }}'>del</a>
+          {{ if(tests[i].results) { }}
+            <a href='/test/results/{{= tests[i]._id }}'>results</a>
+          {{ } }}
+        </td>
       </tr>
     {{ } }}
   </table>
-  <h3> Add a Test </h3>
-  <form for='test' method='post' action='/test/new'>
-    <label for='url'>URL </label>
-    http://<input type='text' id='url' name='url'></input>
-    <br />
-    <label for='url'>pages to hit (one per line) </label>
-    <textarea id='requests' name='requests' cols='80' rows='10'>
-/
-/blog
-    </textarea>
-    <input type='submit' value='Create Test'></input>
+
+  <h3>Add a Test</h3>
+  
+  <form id="test-form" for="test" method="post" action="/test/new">
+    <div id="target-container">
+      <label>Target <small>(e.g. http://hailstorm.no.de:80)</small></label>
+      <select name="protocol" id="protocol">
+        <option value="http" {{ if('undefined' !== typeof(test_prototype) && test_prototype == 'http') { }}checked="checked"{{ } }}>http</option>
+        <option value="https" {{ if('undefined' !== typeof(test_prototype) && test_prototype == 'https') { }}checked="checked"{{ } }}>https</option>
+      </select>://<input type="text" name="host" id="host" {{ if('undefined' !== typeof(test_host)) { }}value="{{= test_host }}" {{ } }}/>:<input type="text" name="port" id="port" {{ if('undefined' !== typeof(test_port) && test_port != 0) { }}value="{{= test_port }}" {{ } }} />
+    </div>
+    <div id="requests-container">
+      <label for="requests">Paths to hit <small>(one per line, specify method later)</small></label>
+      <textarea id="requests" name="requests">{{ if('undefined' !== typeof(test_requests)) { }}{{= test_requests }}{{ } else { }}/
+/blog{{ } }}</textarea>
+    </div>
+    <div>
+      <input type="submit" value="Create Test"></input>
+    </div>
   </form>
 </div>
 
