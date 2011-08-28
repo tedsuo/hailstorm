@@ -10,6 +10,10 @@ $(function(){
     }
   }
   $('#test-form #protocol').change(reset_port);
-  if($('#test-form #port').val() == '')
+  if($('#test-form #port').val() == '') {
     reset_port();
+  }
+
+  $('#test-run-form #start-test').click(){
+  });
 });
