@@ -8,7 +8,22 @@
 {{ } }}
 
 <div id='dashboard-container'>
-  You have {{= account.tests.length}} tests in your queue.
+  {{var tests = account.tests}}
+  You have {{= tests.length}} tests in your queue.
+  <table id='tests'>
+    <tr>
+      <th>URL</th>
+      <th>Verified</th>
+      <th></th>
+    </tr>
+    {{ for(var i = 0; i < tests.length; i++){ }}
+      <tr>
+        <td>{{= tests[i].host }}</td>
+        <td>{{= tests[i].verified }}</td>
+        <td><a href='/dashboard'>run!</td>
+      </tr>
+    {{ } }}
+  </table>
   <h3> Add a Test </h3>
   <form for='test' method='post' action='/test/new'>
     <label for='url'>URL </label>
