@@ -17,9 +17,10 @@
       <th></th>
     </tr>
     {{ for(var i = 0; i < tests.length; i++){ }}
+    {{ var verified_string; if(tests[i].verified) { verified_string = '<span class="verified">verified</span>'; } else { verified_string = '<span class="unverified"><a href="/test/verify/'+tests[i]._id+'">verify now</a></span>'; } }}
       <tr>
         <td>{{= tests[i].host }}</td>
-        <td>{{= tests[i].verified }}</td>
+        <td>{{- verified_string }}</td>
         <td><a href='/dashboard'>run!</td>
       </tr>
     {{ } }}
