@@ -1,3 +1,147 @@
+<script>
+  $(function(){
+    var requests = JSON.parse('{{- test.requests }}');
+
+    function redraw_paths() {
+      $('#paths').empty();
+      
+      // headers
+      var $row = $('<tr>');
+      $row.append($('<th>Method</th>'));
+      $row.append($('<th>Path</th>'));
+      $row.append($('<th>POST Body</th>'));
+      $row.append($('<th>Commands</th>'));
+      $('#paths').append($row);
+
+      // loop through each request
+      for(var i in requests) {
+        var $method = $('<select>')
+          .data('request_id', i);
+        if(requests[i].method == 'GET') {
+          $method.append($('<option selected="selected">GET</option>'));
+          $method.append($('<option>POST</option>'));
+        } else {
+          $method.append($('<option>GET</option>'));
+          $method.append($('<option selected="selected">POST</option>'));
+        }
+        $method.change(function(){
+          requests[$(this).data('request_id')].method = $(this).val();
+          if(requests[$(this).val() == 'GET']) {
+            requests[$(this).data('request_id')].body = '';
+          }
+          redraw_paths();
+        });
+
+        $('#paths').append($method);
+
+        var $path = $('<input>')
+          .data('request_id', i)
+          .change(function(){
+            requests[$(this).data('request_id')].path = $(this).val();
+          })
+          .val(requests[i].path)
+          .addClass('path');
+
+        $body = $('<input>')
+          .data('request_id', i)
+          .change(function(){
+            requests[$(this).data('request_id')].body = $(this).val();
+          })
+          .val(requests[i].body)
+          .addClass('body');
+        if(requests[i].method == 'GET') {
+          $body.attr('disabled', 'disabled');
+        }
+
+        var $del = $('<a>')
+          .data('request_id', i)
+          .html('del')
+          .click(function(){
+            requests.splice($(this).data('request_id'), 1);
+            redraw_paths();
+          });
+
+        var $method_td = $('<td>').append($method);
+        var $path_td = $('<td>').append($path);
+        var $body_td = $('<td>').append($body);
+        var $commands_td = $('<td>').append($del);
+
+        var $row = $('<tr>')
+          .append($method_td)
+          .append($path_td)
+          .append($body_td)
+          .append($commands_td);
+
+        $('#paths').append($row);
+      }
+
+      // add button
+      $('#paths').append('<tr><td colspan="4"><hr/></td></tr>');
+      var $method = $('<select id="add-method">')
+        .append('<option value="GET">GET</option>')
+        .append('<option value="POST">POST</option>');
+      $method.change(function(){
+        if($(this).val() == 'GET') {
+          $('#add-body').attr('disabled', 'disabled');
+          $('#add-body').val('');
+        } else {
+          $('#add-body').removeAttr('disabled');
+        }
+      });
+      var $path = $('<input id="add-path">').addClass('path');
+      var $body = $('<input id="add-body">').addClass('body').attr('disabled', 'disabled');
+      var $add = $('<a>')
+        .html('add')
+        .click(function(){
+          var method = $('#add-method').val();
+          var path = $('#add-path').val();
+          var body = $('#add-body').val();
+
+          // validate
+          if(method != 'GET' && method != 'POST') {
+            alert('invalid method');
+            return;
+          }
+          if(path == '') {
+            alert('invalid path');
+            return;
+          }
+          if(path.substr(0, 1) != '/') {
+            path = '/'+path;
+          }
+          if(method == 'GET' && body != '') {
+            alert('get requests can\'t have post bodies');
+            return;
+          }
+
+          // add it
+          requests.push({
+            method: method,
+            path: path,
+            body: body
+          });
+          redraw_paths();
+        });
+      var $method_td = $('<td>').append($method);
+      var $path_td = $('<td>').append($path);
+      var $body_td = $('<td>').append($body);
+      var $commands_td = $('<td>').append($add);
+      var $row = $('<tr>')
+        .append($method_td)
+        .append($path_td)
+        .append($body_td)
+        .append($commands_td);
+      $('#paths').append($row);
+    }
+
+    $('#paths-form').submit(function(){
+      $('#paths-form #requests').val(JSON.stringify(requests));
+      return true; 
+    });
+
+    redraw_paths();
+  });
+</script>
 <h2>Paths for {{= test.protocol }}://{{= test.host }}{{ if((test.protocol == 'http' && test.port != 80) || (test.protocol == 'https' && test.port != 443)) { }}:{{= test.port }}{{ } }}</h2>
 {{ if('undefined' !== typeof errors && errors.length) { }}
   <ul id="errors">
@@ -7,19 +151,13 @@
   </ul>
 {{ } }}
 
-<table id="paths">
-  {{ for(var i=0; i<requests.length; i++) { }}
-    <tr>
-      <td>
-        <select>
-          <option value="GET">GET</option>
-          <option value="POST">POST</option>
-        </select>
-      </td>
-      <td>
-        <input type="text" value="{{= requests[i].path }}" />
-      </td>
-    </tr>
-  {{ } }}
-</table>
+<table id="paths"></table>
+
+<form id="paths-form" method="post" action="/test/paths/{{= test._id }}">
+  <input type="hidden" id="requests" name="requests" value="" />
+  <input type="submit" name="submit" value="Save changes and keep editing" />
+  <input type="submit" name="submit" value="Save changes and go back to dashboard" />
+  <input type="submit" name="submit" value="Cancel, don't save paths" />
+</form>
+
 
