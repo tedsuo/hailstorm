@@ -12,7 +12,7 @@ var Yeti = function(){
 Yeti.prototype.set = function(settings, callback){
   var yeti = this;
   // expects post body to be a json object with: protocol (http or https), port, host, requests, max_requests, concurrency
-  this.stop(); // hammer time
+  this.clear_queue();
   // TODO: needs error checking on settings 
   this.settings = JSON.parse(settings);
   var ipaddr_regex = new RegExp("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$");
@@ -64,9 +64,13 @@ Yeti.prototype.queue_attack = function(){
   this.attack(this.num_requests);
 };
 
-Yeti.prototype.stop = function() {
+Yeti.prototype.clear_queue = function() {
   this.status = 'hibernating';
   if(this.agent) this.agent.requests = {};
+};
+
+Yeti.prototype.stop = function() {
+  this.clear_queue();
   this.remote.finished();
 };
 
