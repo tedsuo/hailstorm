@@ -107,11 +107,17 @@ body {
   top: 250px;
   left: 280px;
   width: 680px;
+  padding-bottom: 50px;
 }
 
 #wrapper #content h2 {
   font-family: SVBasicManualBook;
   font-size: 26px;
+}
+
+#wrapper #content h3 {
+  font-family: SVBasicManualBook;
+  font-size: 20px;
 }
 
 #wrapper #content p {
