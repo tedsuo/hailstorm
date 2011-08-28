@@ -1,1 +1,26 @@
-Dashboard!
+<h2>Dashboard for {{= account.username}}</h2>
+{{ if('undefined' !== typeof errors && errors.length) { }}
+  <ul id="errors">
+    {{ for(var i in errors) { }}
+      <li class="error">{{= errors[i] }}</li>
+    {{ } }}
+  </ul>
+{{ } }}
+
+<div id='dashboard-container'>
+  You have {{= account.tests.length}} tests in your queue.
+  <h3> Add a Test </h3>
+  <form for='test' method='post' action='/test/new'>
+    <label for='url'>URL </label>
+    http://<input type='text' id='url' name='url'></input>
+    <br />
+    <label for='url'>pages to hit (one per line) </label>
+    <textarea id='requests' name='requests' cols='80' rows='10'>
+/
+/blog
+    </textarea>
+    <input type='submit' value='Create Test'></input>
+  </form>
+</div>
+
+

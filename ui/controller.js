@@ -1,4 +1,3 @@
-var mongoose = require('mongoose');
 var model = require('./model');
 exports.routes = function(app){
   app.get('/',function(req,res){
@@ -6,9 +5,10 @@ exports.routes = function(app){
   });
 
   app.get('/dashboard', function(req,res){
-    if(!req.account) {
-      req.account = 
-      res.render('dashboard',{ account : req.account});
+    if(!req.session.account) {
+      account = model.Account.findOne({}, function(err, account){
+        res.render('dashboard',{ account : account});
+      });
       //res.render('login', { errors: ['you must first log in']});
     } else  {
       res.render('dashboard',{ account : req.account});
@@ -75,7 +75,10 @@ exports.routes = function(app){
     res.render('about');
   }); 
 
-  app.get('/dashboard', function(req,res){
-    res.render('dashboard');
+  app.post('/test/new',function(req,res){
+    console.log(req.body.url);
+    console.log(req.body.requests);
+    req.flash('info', 'test created');
+    res.redirect('/dashboard');
   });
 };
