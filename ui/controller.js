@@ -207,15 +207,38 @@ exports.routes = function(app){
     var create_options = get_req_options();
     create_options.path = "/create";
     create_options.method = "POST";
-    console.log(create_options);
     var create = http.request(create_options,function(create_res){
       var data_buffer = '';
-      res.on('data', function(data){
+      create_res.on('data', function(data){
         data_buffer += data;
       });
-      res.on('end', function(){
+      create_res.on('end', function(){
         var yeti = JSON.parse(data_buffer);
-        console.log(yeti);
+        set_options = get_req_options();
+        set_options.path = "/set/" + yeti.yeti_id;
+        set_options.method = "POST";
+        set_options.headers = {"Content-Type" : "application/json"};
+        var set = http.request(set_options, function(set_res){
+          var data_buffer = '';
+          set.on('data', function(data){
+            data_buffer += data;
+          });
+          set.on('end', function(){
+            start_options = get_req_options();
+            start_options.path = "/start/" + yeti.yeti_id;
+            start_options.method = "POST";
+            var start = http.request(start_options, function(start_res){
+              var data_buffer = '';
+              start.on('data', function(data){
+                data_buffer += data;
+              });
+              start.on('end', function(){
+                res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
+              });
+            });
+          });
+        });
+        set.end(payload);
       });
     });
     create.end();
@@ -235,7 +258,6 @@ exports.routes = function(app){
     ); 
     queue.write(payload);
     queue.end();*/
-    res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
   });
 
   app.get('/test/verify/:id', function(req,res){
