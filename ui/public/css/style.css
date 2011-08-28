@@ -75,6 +75,10 @@ body {
   padding: 0;
 }
 
+#wrapper #header h1 a {
+  color: #ffffff;
+}
+
 #wrapper #header p {
   font-family: WickedGritRegular;
   font-size: 20px;
