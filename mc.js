@@ -46,8 +46,8 @@ var yeti_server = dnode(function (client, conn){
       yeti.data[result.status_code][rounded_start_time][rounded_response] = 0;
     }
     current_count = yeti.data[result.status_code][rounded_start_time][rounded_response]++;
-    if(yeti.data.max_responses < current_count){
-      yeti.data.max_responses = current_count;
+    if(yeti.max_responses < current_count){
+      yeti.max_responses = current_count;
     }
   }
   
@@ -78,7 +78,7 @@ var yeti_server = dnode(function (client, conn){
       }
       console.log('Yeti '+yeti.id+' finished Test '+yeti.test_id+' for account '+yeti.account_id);
       var test = account.tests.id(yeti.test_id);
-      test.results = JSON.stringify(yeti.data);
+      test.results = JSON.stringify({data: yeti.data, max_responses: yeti.max_responses});
       test.running = false;
       test.save(function(err){
         if(err){
@@ -230,7 +230,7 @@ var mc = {
       res.writeHead(200);
       res.end();
     }
-    res.send(JSON.stringify(yeti.data));
+    res.send(JSON.stringify({data: yeti.data, max_responses: yeti.max_responses}));
   }
 }
 
