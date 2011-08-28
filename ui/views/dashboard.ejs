@@ -1,12 +1,5 @@
 <script src="/js/dashboard.js"></script>
 <h2>Dashboard for {{= account.username}}</h2>
-{{ if('undefined' !== typeof errors && errors.length) { }}
-  <ul id="errors">
-    {{ for(var i in errors) { }}
-      <li class="error">{{= errors[i] }}</li>
-    {{ } }}
-  </ul>
-{{ } }}
 
 <div id='dashboard-container'>
   {{var tests = account.tests}}
@@ -39,6 +32,14 @@
 
   <h3>Add a Test</h3>
   
+  {{ if('undefined' !== typeof errors && errors.length) { }}
+    <ul id="errors">
+      {{ for(var i in errors) { }}
+        <li class="error">{{= errors[i] }}</li>
+      {{ } }}
+    </ul>
+  {{ } }}
+ 
   <form id="test-form" for="test" method="post" action="/test/new">
     <div id="target-container">
       <label>Target <small>(e.g. http://hailstorm.no.de:80)</small></label>

@@ -223,10 +223,37 @@ exports.routes = function(app){
     var test = req.account.tests.id(req.params.id);
     console.log(test);
     if(!test.verified) {
-      render('/dashboard');
+      res.render('dashboard');
       return;
     }
     res.render('test_run',_.extend(logged_in(req),{test : test})); 
+  });
+
+  app.get('/test/data/:id',function(req, res){
+    if(!force_authentication(req, res)) return;
+    var test = req.account.tests.id(req.params.id);
+    if(!test.verified){
+      render('/dashboard');
+      return;
+    }
+    yeti_id = test.yeti;
+    report_options = get_req_options();
+    report_options.path = '/report/' + yeti_id;
+    report = http.get(report_options, function(report_res){
+      data_buffer = '';
+      report_res.on('data', function(data){
+        data_buffer += data;
+      });
+      report_res.on('end', function(){
+        res.send(data_buffer);
+      });
+    }).on('error', function(e){
+      res.send('Error: '+e.message);
+    });
+  });
+
+  app.get('/test/:id', function(req, res){
+        res.render('test_report',_.extend(logged_in(req),{id: req.params.id})); 
   });
 
   app.post('/test/run', function(req, res){
@@ -260,6 +287,15 @@ exports.routes = function(app){
       });
       create_res.on('end', function(){
         var yeti = JSON.parse(data_buffer);
+        test.yeti=yeti.yeti_id;
+        console.log(test);
+        req.account.save(function(err){
+          if(err) {
+            console.log(err.message) ;
+          }else{
+            console.log('Saved yeti');
+          }
+        });
         setTimeout(function(){
           set_options = get_req_options();
           set_options.path = "/set/" + yeti.yeti_id;
@@ -281,7 +317,7 @@ exports.routes = function(app){
                   data_buffer += data;
                 });
                 start_res.on('end', function(){
-                  res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
+                  res.redirect('/test/' + test._id);
                 });
               });
               start.end();
@@ -337,7 +373,7 @@ exports.routes = function(app){
     if(!force_authentication(req, res)) return;
 
     if(req.body.submit == 'Cancel and go back') {
-      res.redirect('/dashboard');
+      res.redirect('dashboard');
       return;
     }
     var test = req.account.tests.id(req.params.id);
@@ -400,7 +436,10 @@ exports.routes = function(app){
   app.get('/test/delete/:id', function(req,res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.params.id);
-    res.render('test_delete', _.extend(logged_in(req), { test:test }));
+    var requests = [];
+    if(test.requests)
+      requests = JSON.parse(test.requests);
+    res.render('test_delete', _.extend(logged_in(req), { test:test, requests:requests }));
   }); 
 
   app.post('/test/delete/:id', function(req,res){
@@ -421,18 +460,37 @@ exports.routes = function(app){
   app.get('/test/paths/:id', function(req,res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.params.id);
-    var requests = [];
-    if(test.requests)
-      requests = JSON.parse(test.requests);
-    res.render('test_paths', _.extend(logged_in(req), { test:test, requests:requests }));
+    res.render('test_paths', _.extend(logged_in(req), { test:test }));
   }); 
 
   app.post('/test/paths/:id', function(req,res){
     if(!force_authentication(req, res)) return;
-    /*var test = req.account.tests.id(req.params.id);
-    test.remove();
-    req.account.save(function(err){
+
+    if(req.body.submit == "Cancel, don't save paths") {
+      console.log('cancel, dont save paths');
       res.redirect('/dashboard');
-    });*/
+      return;
+    }
+    
+    var test = req.account.tests.id(req.params.id);
+    var errors = [];
+    try {
+      JSON.parse(req.body.requests);
+    } catch(e) {
+      errors.push('Ack, the data is in a bad format');
+      res.render('test_paths', _.extend(logged_in(req), { errors:errors, test:test }));
+      return;
+    }
+
+    test.requests = req.body.requests;
+    req.account.save(function(err){
+      if(req.body.submit == "Save changes and keep editing") {
+        console.log('save changes and keep editing');
+        res.render('test_paths', _.extend(logged_in(req), { test:test }));
+      } else {
+        console.log('save changes and go back to dashboard');
+        res.redirect('/dashboard');
+      }
+    });
   });
 };

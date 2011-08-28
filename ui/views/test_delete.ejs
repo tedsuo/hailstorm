@@ -3,8 +3,8 @@
 <p><strong>Target:</strong><br/>
 {{= test.protocol }}://{{= test.host }}{{ if((test.protocol == 'http' && test.port != 80) || (test.protocol == 'https' && test.port != 443)) { }}:{{= test.port }}{{ } }}</p>
 <p><strong>Requests:</strong><br>
-{{ for(var i=0; i<test.requests; i++) { }}
-{{= test.requests[i].method }} {{= test.requests[i].path }} {{= test.requests[i].body }}<br/>
+{{ for(var i=0; i<requests.length; i++) { }}
+{{= requests[i].method }} {{= requests[i].path }} {{= requests[i].body }}<br/>
 {{ } }}
 </p>
 

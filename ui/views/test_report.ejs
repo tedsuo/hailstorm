@@ -1,0 +1,15 @@
+<script type='text/javascript'>
+  $(document).ready(function(){
+    setInterval(function(){
+      $.ajax({
+        url: '/test/data/{{= id}}',
+        type: 'get',
+        dataType: 'json',
+        success: function(data){
+          chart_data(data);
+        }
+      });
+    },5000);
+  });
+</script>
+<div id='container'></div>
