@@ -175,20 +175,20 @@ body {
   font-weight: bold;
 }
 
-#wrapper table#tests {
+#wrapper table#tests, #wrapper table#paths {
   width: 100%;
   background-color: #000000;
   border: 2px solid #333333;
 }
 
-#wrapper table#tests th {
+#wrapper table#tests th, #wrapper table#paths th {
   text-align: left;
   font-weight: bold;
   background-color: #333333;
   padding: 5px;
 }
 
-#wrapper table#tests td {
+#wrapper table#tests td, #wrapper table#paths td {
   padding: 5px;
 }
 
@@ -196,7 +196,7 @@ body {
   color: #00ff00;
 }
 
-#wrapper table#tests td.commands a, #wrapper table#tests td .unverified a {
+#wrapper table#tests td.commands a, #wrapper table#tests td .unverified a, #wrapper table#paths a {
   background-color: #004c8c;
   color: #FFFFFF;
   padding: 2px 8px;
@@ -232,3 +232,29 @@ body {
   height: 100px;
 }
 
+#wrapper #paths {
+  margin-bottom: 20px;
+}
+#wrapper #paths select {
+  font-family: SVBasicManualBook;
+  border: 0;
+  padding: 3px;
+}
+#wrapper #paths input {
+  font-family: SVBasicManualBook;
+  border: 0;
+  padding: 3px;
+}
+#wrapper #paths input[disabled=disabled] {
+  background-color: #666666;
+}
+#wrapper #paths input.path {
+  width: 300px;
+}
+#wrapper #paths input.body {
+  width: 100px;
+}
+#wrapper #paths hr {
+  color: #333333;
+  border: 1px solid;
+}
