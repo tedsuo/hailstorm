@@ -23,7 +23,9 @@
         <td>{{- verified_string }}</td>
         <td class="commands">
           <a href='/test/paths/{{= tests[i]._id }}'>paths</a>
-          <a href='/test/run/{{= tests[i]._id }}'>run</a>
+          {{ if(tests[i].verified) { }}
+            <a href='/test/run/{{= tests[i]._id }}'>run</a>
+          {{ } }}
           <a href='/test/delete/{{= tests[i]._id }}'>del</a>
           {{ if(tests[i].results) { }}
             <a href='/test/results/{{= tests[i]._id }}'>results</a>
