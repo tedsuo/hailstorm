@@ -234,10 +234,15 @@ exports.routes = function(app){
   app.get('/test/data/:id',function(req, res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.params.id);
-    if(!test.verified || !test.running){
+    if(!test.verified){
       res.send('permission denied');
       return;
-    }
+    }/*
+    if(!test.running){
+      console.log('test not running');
+      send_responses(test.results, {status:"finished"}, res);
+      return;
+    }*/
     yeti_id = test.yeti;
     var report_options = get_req_options();
     report_options.path = '/report/' + yeti_id;
@@ -255,6 +260,7 @@ exports.routes = function(app){
       report_res.on('end', function(){
         report_responded = true;
         if(status_responded == true){
+          console.log('test running');
           send_responses(report_data_buffer, status_data_buffer, res);
         }
       });
@@ -268,6 +274,7 @@ exports.routes = function(app){
       status_res.on('end', function(){
         status_responded = true;
         if(report_responded == true){
+          console.log('test running');
           send_responses(report_data_buffer, status_data_buffer, res);
         }
       });
@@ -277,17 +284,13 @@ exports.routes = function(app){
 
   });
   function send_responses(report_data, status_data, res){
+    console.log('Report Data: ');
+    console.log(report_data);
     res.send({report: JSON.parse(report_data), status: JSON.parse(status_data)});
   }
 
   app.get('/test/report/:id', function(req, res){
     if(!force_authentication(req, res)) return;
-    console.log('/test/report/:id '+JSON.stringify(req.params));
-    var test = req.account.tests.id(req.params.id);
-    if(!test.running) {
-      res.redirect('/dashboard');
-      return;
-    }
     res.render('test_report',_.extend(logged_in(req),{id: req.params.id})); 
   });
 
@@ -314,6 +317,7 @@ exports.routes = function(app){
       },
       concurrency : Number(req.body.concurrency), 
       max_requests : Number(req.body.max_requests),
+      account_id: req.account._id,
       test_id: test._id
     };
 
@@ -359,7 +363,10 @@ exports.routes = function(app){
                   data_buffer += data;
                 });
                 start_res.on('end', function(){
-                  res.redirect('/test/report/' + test._id);
+                  test.running = true;
+                  test.save(function(){
+                    res.redirect('/test/report/' + test._id);
+                  });
                 });
               });
               start.end();

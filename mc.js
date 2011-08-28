@@ -33,6 +33,7 @@ var yeti_server = dnode(function (client, conn){
   });
   
   this.report = function(result){
+    var current_count = 0;
     var rounded_response = Math.round(result.response_time / 100);
     var rounded_start_time = Math.ceil(result.start_time / 5000);
     if(yeti.data[result.status_code] == undefined){
@@ -44,35 +45,39 @@ var yeti_server = dnode(function (client, conn){
     if(yeti.data[result.status_code][rounded_start_time][rounded_response] == undefined){
       yeti.data[result.status_code][rounded_start_time][rounded_response] = 0;
     }
-    yeti.data[result.status_code][rounded_start_time][rounded_response]++;
+    current_count = yeti.data[result.status_code][rounded_start_time][rounded_response]++;
+    if(yeti.data.max_responses < current_count){
+      yeti.data.max_responses = current_count;
+    }
   }
   
   this.updateYetiStatus = function(status){
     yeti.status = status;
-    model.Test.findById(yeti.test_id, function(err, test) {
+    model.Account.findById(yeti.account_id, function(err, account) {
       if(err){
         console.log(err);
         return;
       }
+      var test = account.tests.id(yeti.test_id);
       if(status == 'attacking'){
         test.running = true;
-      } else {
-        test.running = false;
+        test.save(function(err){
+          if(err){
+            console.log(err);
+          }
+        });
       }
-      test.save(function(err){
-        if(err){
-          console.log(err);
-        }
-      });
     });
   };
   
   this.finished = function(){
-    model.Test.findById(yeti.test_id, function(err, test) {
+    model.Account.findById(yeti.account_id, function(err, account) {
       if(err){
         console.log(err);
         return;
       }
+      console.log('Yeti '+yeti.id+' finished Test '+yeti.test_id+' for account '+yeti.account_id);
+      var test = account.tests.id(yeti.test_id);
       test.results = JSON.stringify(yeti.data);
       test.running = false;
       test.save(function(err){
@@ -141,8 +146,10 @@ var mc = {
       return;
     }
 
+    yeti.account_id = req.body.account_id;
     yeti.test_id = req.body.test_id;
     yeti.data = {};
+    yeti.max_responses = 0;
         
     var target = req.body.target;
     target.max_requests = req.body.max_requests;
