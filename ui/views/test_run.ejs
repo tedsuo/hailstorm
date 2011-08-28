@@ -1,12 +1,27 @@
-<h2>Test Settings for {{= test.host }}</h2>
-<form method='post' id='test-run-form' action='/test/run'>
-  <br />
-  <label for='concurrency'>Concurrency</label>
-  <input type='text' id='concurrency' name='concurrency'>
-  <br />
-  <label for='max_requests'>Max Requests</label>
-  <input type='text' id='max_requests' name='max_requests'>
-  <br />
+<script src="/js/run.js"></script>
+<h2>Run Test: {{= test.protocol }}://{{= test.host }}{{ if((test.protocol == 'http' && test.port != 80) || (test.protocol == 'https' && test.port != 443)) { }}:{{= test.port }}{{ } }}</h2>
+<form method='post' id='run-form' action='/test/run'>
+  <div class="run-setting">
+    <label for='concurrency'>Concurrency</label>
+    <div class="slider" id="concurrency-slider"></div>
+    <div class="number" id="concurrency-number"></div>
+  </div>
+  <div class="run-setting">
+    <label for='max_requests'>Max Requests</label>
+    <div class="slider" id="max-requests-slider"></div>
+    <div class="number" id="max-requests-number"></div>
+  </div>
+  
+  <p><strong>Requests:</strong><br>
+  {{ var requests = JSON.parse(test.requests); }}
+  {{ for(var i=0; i<requests.length; i++) { }}
+  &nbsp; &nbsp; {{= requests[i].method }} {{= requests[i].path }} {{= requests[i].body }}<br/>
+  {{ } }}
+  </p>
+
+  <input type='hidden' id='concurrency' name='concurrency'>
+  <input type='hidden' id='max_requests' name='max_requests'>
   <input type='hidden' id='test_id' name='test_id' value={{= test.id}}>
-  <input id='start-test' type='submit' value='Make it Hail!'></input>
+  <input id='start-test' name="submit" type='submit' value='MAKE IT HAIL'></input>
+  <input id='abort' name="submit" type='submit' value='Run away!'></input>
 </form>

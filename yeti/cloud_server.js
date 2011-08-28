@@ -6,7 +6,10 @@ yetis = [];
 
 var mc_client = dnode({
   create: function(callback){
-    var yeti = spawn('node',[__dirname+'/yeti_server.js']);
+    var yeti = spawn('node',
+      [__dirname+'/yeti_server.js'],{
+      env: process.env
+    });
     yeti.yeti_id = yeti.pid;
     yetis[yeti.yeti_id] = yeti;
 
@@ -35,12 +38,14 @@ var mc_client = dnode({
 });
 
 if(process.env.NODE_ENV == 'production'){
+  console.log('Trying to connect to MC on hailstorm.no.de:1337');
   mc_client.connect('hailstorm.no.de',61338, function(remote, conn){
     mc_client.remote = remote;
     mc_client.remote_conn = conn;
     console.log('Connected to MC on hailstorm.no.de:61338');
   });
 } else {
+  console.log('Trying to connect to MC on localhost:1337');
   mc_client.connect(61338, function(remote, conn){
     mc_client.remote = remote;
     mc_client.remote_conn = conn;

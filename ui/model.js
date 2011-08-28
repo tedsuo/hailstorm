@@ -14,7 +14,8 @@ var Test = new Schema({
   , verified  : Boolean
   , requests  : String
   , results   : String
-  , yeti     : String
+  , running   : Boolean
+  , yeti      : String
 });
 
 var Account = new Schema({
