@@ -1,14 +1,14 @@
-<h2>Register</h2>
+<h2>You must register to control the yeti horde</h2>
 
-{{ if('undefined' !== typeof errors && errors.length) { }}
+{{ if(typeof(errors) !== 'undefined' && errors && errors.length) { }}
   <ul id="errors">
     {{ for(var i in errors) { }}
-      <li class="error">{{ errors[i] }}</li>
+      <li class="error">{{= errors[i] }}</li>
     {{ } }}
   </ul>
 {{ } }}
 
-<form action="/register" method="post">
+<form id="register" action="/register" method="post">
   <div id="login">
     <label for="username">Username</label>
     <input type="text" name="username" value="" />
@@ -18,6 +18,6 @@
     <input type="password" name="password" value="" />
   </div>
   <div id="submit">
-    <input type="submit" value="Register" />
+    <input type="submit" value="Create Account" />
   </div>
 </form>
