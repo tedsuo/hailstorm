@@ -381,7 +381,7 @@ exports.routes = function(app){
     if(!force_authentication(req, res)) return;
 
     if(req.body.submit == 'Cancel and go back') {
-      res.redirect('dashboard');
+      res.redirect('/dashboard');
       return;
     }
     var test = req.account.tests.id(req.params.id);
