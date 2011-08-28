@@ -37,9 +37,11 @@ if(process.env.CLOUD_SERVER == 'true') {
   console.log('MC has been spawned');
 
   // spawn the cloud server
-  var ui = spawn(node5, ['cloud_server.js'], { cwd: __dirname + '/yeti/' });
-  ui.stdout.on('data', function(data){ log('cloud_server stdout', data); });
-  ui.stderr.on('data', function(data){ log('cloud_server stderr', data); });
-  ui.on('exit', function(code){ console.log('cloud_server exited with code '+code); });
-  console.log('cloud_server has been spawned');
+  setTimeout(function(){
+    var ui = spawn(node5, ['cloud_server.js'], { cwd: __dirname + '/yeti/' });
+    ui.stdout.on('data', function(data){ log('cloud_server stdout', data); });
+    ui.stderr.on('data', function(data){ log('cloud_server stderr', data); });
+    ui.on('exit', function(code){ console.log('cloud_server exited with code '+code); });
+    console.log('cloud_server has been spawned');
+  },5000);
 }
