@@ -149,7 +149,8 @@ body {
 #wrapper input[type=text], #wrapper input[type=password] {
   background-color: #ffffff;
   color: #333333;
-  padding: 10px;
+  padding: 5px;
+  margin: 0 0 3px 0;
   border: 0;
   font-size: 20px;
 }
