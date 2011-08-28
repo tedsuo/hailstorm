@@ -5,6 +5,7 @@ var model = require('./model');
 var everyauth = require('everyauth');
 // Step 1 code goes here
 everyauth.password
+  .loginFormFieldName('username')
   .getLoginPath('/login') // Uri path to the login page
   .postLoginPath('/login') // Uri path that your login form POSTs to
   .loginView('login')
@@ -26,7 +27,7 @@ everyauth.password
   .getRegisterPath('/register') // Uri path to the registration page
   .postRegisterPath('/register') // The Uri path that your registration form POSTs to
   .registerView('register')
-  .validateRegistration( function (newUserAttributes) {
+  .validateRegistration( function (user) {
     // Validate the registration input
     // Return undefined, null, or [] if validation succeeds
     // Return an array of error messages (or Promise promising this array)
@@ -37,21 +38,32 @@ everyauth.password
     // return errors;
     //
     // The `errors` you return show up as an `errors` local in your jade template
-    model.does_username_exist(username, function(err, exists){
+    return null;
+    console.log('validateRegistration '+JSON.stringify(user));
+    var promise = this.Promise();
+    model.does_username_exist(user.username, function(err, exists){
+      var ret;
       if(exists) {
-        return ['That username is already taken! Either log in or try another username'];
+        ret = ['That username is already taken! Either log in or try another username'];
       } else {
-        return [];
+        ret = null;
       }
+      promise.fulfill(ret);
     });
+    return promise;
   })
-  .registerUser( function (newUserAttributes) {
-    model.create_account(username, password, function(err, user){
+  .registerUser( function (user) {
+    var promise = this.Promise();
+    console.log(user);
+    model.create_account(user.username, user.password, function(err, user){
       if(err && err.length > 0){
-        return err;
+        console.log('error in reg');
+        promise.fulfill(err);
+        return;
       }
-      return user;
+      promise.fulfill(user);
     });
+    return promise;
     // This step is only executed if we pass the validateRegistration step without
     // any errors.
     //
@@ -92,6 +104,7 @@ if(process.env.NODE_ENV == 'production'){
 var app = express.createServer(
   express.static(__dirname + '/public'),
   express.cookieParser(),
+  express.bodyParser(),
   express.session({ secret: "magicpants" }),
   everyauth.middleware(),
   model.setUser()
