@@ -286,7 +286,12 @@ exports.routes = function(app){
   function send_responses(report_data, status_data, res){
     console.log('Report Data: ');
     console.log(report_data);
-    res.send({report: JSON.parse(report_data), status: JSON.parse(status_data)});
+    try{
+      res.send({report: JSON.parse(report_data), status: JSON.parse(status_data)});
+    } catch(err){
+      console.log(err);
+      res.send({report:{},status:{}});
+    }
   }
 
   app.get('/test/report/:id', function(req, res){
