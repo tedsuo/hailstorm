@@ -9,7 +9,7 @@ app.use(express.bodyParser());
 var yetis = {};
 
 function obj_length(obj){
-  x = 0;
+  var x = 0;
   for(i in obj){
     x++;
   }
@@ -56,7 +56,6 @@ var mc = {
         yetis_to_start[i] = yetis[i];
       }
     }
-    console.log(yetis_to_start);
     var res_obj = {};
     _.each(yetis_to_start, function(yeti_to_start, id){
       yeti_to_start.client.start(function(err, status){
@@ -64,7 +63,7 @@ var mc = {
           status: status
         };
         yeti_to_start.status = status;
-        if(obj_length(res_obj) == yetis_to_start.length){
+        if(obj_length(res_obj) == obj_length(yetis_to_start)){
           res.send(JSON.stringify(res_obj));
         }
       });
@@ -84,7 +83,7 @@ var mc = {
           status: status
         };
         yeti_to_stop.status = status;
-        if(obj_length(res_obj) == yetis_to_stop.length){
+        if(obj_length(res_obj) == obj_length(yetis_to_stop)){
           res.send(JSON.stringify(res_obj));
         }
       });
@@ -104,7 +103,7 @@ var mc = {
           status: status
         };
         yeti_to_status.status = status;
-        if(obj_length(res_obj) == yetis_to_status.length){
+        if(obj_length(res_obj) == obj_length(yetis_to_status)){
           res.send(JSON.stringify(res_obj));
         }
       });
