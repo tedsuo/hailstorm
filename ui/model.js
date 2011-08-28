@@ -46,10 +46,8 @@ exports.Test = mongoose.model('Test', Test);
 exports.Account = mongoose.model('Account', Account);
 
 exports.create_account = function(username, password, cb) {
-  console.log('create_account getting run: username: '+username+', password: '+password);
   var account = new exports.Account({ username:username, password:password });
   account.save(function(err){
-    console.log('saving account, err: '+err);
     if(err) {
       cb(err);
     } else {
@@ -59,7 +57,6 @@ exports.create_account = function(username, password, cb) {
 };
 
 exports.does_username_exist = function(username, cb) {
-  console.log('does_username_exist getting run: '+username);
   exports.Account.find({ username:username }, function(err, docs){
     if(err) {
       cb(err);
@@ -68,12 +65,4 @@ exports.does_username_exist = function(username, cb) {
     }
   });
 };
-
-exports.setUser = function(){
-  return function(req,res,next){
-    res.params = {user:'Somebody'};
-    next();
-  };
-};
-
 

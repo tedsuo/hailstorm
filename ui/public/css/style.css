@@ -1,126 +1,168 @@
 body {
-    background-color: #000000;
-    background-image: url('/images/background.jpg'), url('/images/background_blue_bar.png');
-    background-position: top center;
-    background-repeat: no-repeat, repeat-y;
-    color: #ffffff;
+  background-color: #000000;
+  background-image: url('/images/background.jpg'), url('/images/background_blue_bar.png');
+  background-position: top center;
+  background-repeat: no-repeat, repeat-y;
+  color: #ffffff;
 }
 
 #wrapper {
-    width: 960px;
-    margin: 0 auto;
-    background-image: url('/images/logo.png');
-    background-position: top left;
-    background-repeat: no-repeat;
-    min-height: 600px;
-    position: relative;
+  width: 960px;
+  margin: 0 auto;
+  background-image: url('/images/logo.png');
+  background-position: top left;
+  background-repeat: no-repeat;
+  min-height: 600px;
+  position: relative;
 }
 
 #wrapper a {
-    color: #008cff;
-    text-decoration: none;
+  color: #008cff;
+  text-decoration: none;
 }
 
 #wrapper a:hover {
-    font-style: italic;
+  font-style: italic;
 }
 
 #wrapper #vote {
-    position: absolute;
-    top: 450px;
-    left: 75px;
+  position: absolute;
+  top: 450px;
+  left: 75px;
 }
 
 #wrapper #follow {
-    position: absolute;
-    top: 500px;
-    left: 70px;
-    width: 130px;
-    font-family: SVBasicManualBook;
-    font-size: 22px;
-    color: #ffffff;
+  position: absolute;
+  top: 500px;
+  left: 70px;
+  width: 130px;
+  font-family: SVBasicManualBook;
+  font-size: 22px;
+  color: #ffffff;
 }
 
 #wrapper #twitter {
-    position: absolute;
-    top: 530px;
-    left: 75px;
-    width: 130px;
+  position: absolute;
+  top: 530px;
+  left: 75px;
+  width: 130px;
 }
 
 #wrapper #twitter a {
-    color: #d5ecff;
-    text-decoration: none;
-    display: block;
-    padding-bottom: 5px;
-    font-family: SVBasicManualBook;
-    font-size: 20px;
+  color: #d5ecff;
+  text-decoration: none;
+  display: block;
+  padding-bottom: 5px;
+  font-family: SVBasicManualBook;
+  font-size: 20px;
 }
 
 #wrapper #twitter a:hover {
-    font-style: italic;
+  font-style: italic;
 }
 
 #wrapper #header {
-    position: absolute;
-    top: 50px;
-    left: 320px;
-    width: 640px;
+  position: absolute;
+  top: 50px;
+  left: 320px;
+  width: 640px;
 }
 
 #wrapper #header h1 {
-    font-family: WickedGritRegular;
-    font-size: 70px;
-    margin: 0;
-    padding: 0;
+  font-family: WickedGritRegular;
+  font-size: 70px;
+  margin: 0;
+  padding: 0;
 }
 
 #wrapper #header p {
-    font-family: WickedGritRegular;
-    font-size: 20px;
-    margin: 0;
-    padding: 0;
+  font-family: WickedGritRegular;
+  font-size: 20px;
+  margin: 0;
+  padding: 0;
 }
 
 #wrapper #nav {
-    position: absolute;
-    top: 220px;
-    left: 280px;
-    width: 680px;
+  position: absolute;
+  top: 220px;
+  left: 280px;
+  width: 680px;
 }
 
 #wrapper #nav a {
-    background-color: #008cff;
-    color: #ffffff;
-    padding: 8px 12px;
-    border-radius: 8px 12px;
-    font-family: SVBasicManualBook;
-    font-size: 18px;
+  background-color: #008cff;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 8px 12px;
+  font-family: SVBasicManualBook;
+  font-size: 18px;
 }
 
 #wrapper #content {
-    position: absolute;
-    top: 250px;
-    left: 280px;
-    width: 680px;
+  position: absolute;
+  top: 250px;
+  left: 280px;
+  width: 680px;
 }
 
 #wrapper #content h2 {
-    font-family: SVBasicManualBook;
-    font-size: 26px;
+  font-family: SVBasicManualBook;
+  font-size: 26px;
 }
 
 #wrapper #content p {
-    font-family: SVBasicManualBook;
-    font-size: 18px;
+  font-family: SVBasicManualBook;
+  font-size: 18px;
 }
 
 #wrapper a.button {
-    background-color: #008cff;
-    color: #ffffff;
-    padding: 8px 12px;
-    border-radius: 8px 12px;
-    font-family: SVBasicManualBook;
-    font-size: 18px;
+  background-color: #008cff;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 8px 12px;
+  font-family: SVBasicManualBook;
+  font-size: 18px;
+}
+
+#wrapper ul#errors {
+  font-family: SVBasicManualBook;
+  font-size: 16px;
+  list-style: none;
+  padding: 0 0 0 20px;;
+}
+
+#wrapper ul#errors li {
+  color: #ff6666;
+}
+
+#wrapper form#register {
+  text-align: center;
+}
+
+#wrapper label {
+  display: inline-block;
+  width: 90px;
+  font-family: SVBasicManualBook;
+  font-size: 18px;
+}
+
+#wrapper input[type=text], #wrapper input[type=password] {
+  background-color: #ffffff;
+  color: #333333;
+  padding: 10px;
+  border: 0;
+  font-size: 20px;
+}
+
+#wrapper input[type=submit] {
+  background-color: #ffffff;
+  color: #008CFF;
+  padding: 5px 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  border: 0;
+  font-size: 18px;
+  font-weight: bold;
 }
 
