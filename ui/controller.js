@@ -157,7 +157,7 @@ exports.routes = function(app){
       port : 80,
       protocol : 'http',
       verified : false,
-      requests : requests,
+      requests : JSON.stringify(requests),
       results : []
     };
     req.account.tests.push(test);
@@ -179,12 +179,11 @@ exports.routes = function(app){
   app.post('/test/run', function(req, res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.body.test_id);
-    var requests = test.requests
+    var requests = JSON.parse(test.requests);
     if(!test.verified) {
       render('/dashboard');
       return;
     }
-    console.log(requests);
     payload = {
       target : {
         protocol : test.protocol,
@@ -206,8 +205,9 @@ exports.routes = function(app){
         path : '/set', 
         headers : {'Content-Type' : "application/json"}
       }, 
-      function(res){
-        res.on('data', function(){
+      function(set_res){
+        set_res.on('end', function(){
+          console.log('ok it was set');
           var start = http.request( { host: "127.0.0.1", port : 31337, method : 'POST', path : '/start', });
           start.end();
         });

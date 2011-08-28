@@ -134,6 +134,7 @@ app.get('/create', function(req, res){
 
 app.post('/set', function(req, res){
   mc.set(req, res);
+  console.log('crapola');
 });
 
 app.post('/start', function(req, res){
