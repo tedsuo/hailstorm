@@ -3,7 +3,7 @@ var https = require('https');
 var dns = require('dns');
 
 var Yeti = function(o){
-  this.remote = undefined;
+  this.remote = o.remote;
   this.settings = {};
   this.requests_sent = 0;
   this.request_log = {};
@@ -56,6 +56,7 @@ Yeti.prototype.start = function(callback){
   for( var i=0; i < initial_queue_size; i++) {
     this.attack();
   }
+  this.initial_start_time = new Date().getTime();
 };
 
 Yeti.prototype.queue_attack = function(){
@@ -123,7 +124,7 @@ Yeti.prototype.attack = function(){
     yeti.on_request_start(request_id);
   });
   
-  if(request_id.body) req.write(request_id.body);
+  if(req_data.body) req.write(req_data.body);
   
   req.end();
 
@@ -136,18 +137,19 @@ Yeti.prototype.attack = function(){
 };
 
 Yeti.prototype.on_request_start = function(request_id){
-  this.request_log[request_id].start_time = new Date().getTime();
+  this.request_log[request_id].start_time = new Date().getTime() - this.initial_start_time;
 };
 
 Yeti.prototype.on_request_end = function(request_id,res){
   // queue up another request
   this.attack();
   // log result
-  this.request_log[request_id].end_time = new Date().getTime();
+  this.request_log[request_id].end_time = new Date().getTime() - this.initial_start_time;
   this.request_log[request_id].response_time = this.request_log[request_id].end_time - this.request_log[request_id].start_time;
   this.request_log[request_id].status_code = res.statusCode;          
   this.requests_sent++;
-  console.log('request '+request_id+' '+this.request_log[request_id].method+' '+this.request_log[request_id].path+' finished with code '+this.request_log[request_id].status_code+' in '+this.request_log[request_id].response_time+' ms');            
+  console.log('request '+request_id+' '+this.request_log[request_id].method+' '+this.request_log[request_id].path+' finished with code '+this.request_log[request_id].status_code+' in '+this.request_log[request_id].response_time+' ms');
+  this.remote.report(this.request_log[request_id]);
 };
 
 module.exports = Yeti;
