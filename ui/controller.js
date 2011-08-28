@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var model = require('./model');
+var http = require('http');
 
 function force_authentication(req, res) {
   if(req.account) {
@@ -145,5 +146,57 @@ exports.routes = function(app){
     req.account.tests.push(test);
     req.account.save();
     res.redirect('/dashboard');
+  });
+  app.get('/test/run/:id',function(req,res){
+    if(!force_authentication(req, res)) return;
+    var test = req.account.tests.id(req.params.id);
+    console.log(test);
+    if(!test.verified) {
+      render('/dashboard');
+      return;
+    }
+    res.render('test_run',_.extend(logged_in(req),{test : test})); 
+  });
+
+  app.post('/test/run', function(req, res){
+    if(!force_authentication(req, res)) return;
+    var test = req.account.tests.id(req.body.test_id);
+    var requests = test.requests
+    if(!test.verified) {
+      render('/dashboard');
+      return;
+    }
+    console.log(requests);
+    payload = {
+      target : {
+        protocol : test.protocol,
+        port : Number(test.port),
+        host : test.host,
+        requests : requests
+      },
+      concurrency : Number(req.body.concurrency), 
+      max_requests : Number(req.body.max_requests),
+    };
+
+    payload = JSON.stringify(payload); 
+    console.log(payload);
+    var queue = http.request(
+      { 
+        host: "127.0.0.1", 
+        port : 31337, 
+        method : 'POST', 
+        path : '/set', 
+        headers : {'Content-Type' : "application/json"}
+      }, 
+      function(res){
+        res.on('data', function(){
+          var start = http.request( { host: "127.0.0.1", port : 31337, method : 'POST', path : '/start', });
+          start.end();
+        });
+      }
+    ); 
+    queue.write(payload);
+    queue.end();
+    res.render('dashboard', _.extend(logged_in(req), { account: req.account }));
   });
 };

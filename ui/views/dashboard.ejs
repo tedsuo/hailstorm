@@ -20,7 +20,7 @@
       <tr>
         <td>{{= tests[i].host }}</td>
         <td>{{= tests[i].verified }}</td>
-        <td><a href='/dashboard'>run!</td>
+        <td><a href='/test/run/{{= tests[i]._id }}'>run!</td>
       </tr>
     {{ } }}
   </table>
