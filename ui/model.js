@@ -7,10 +7,6 @@ function hash(password) {
   return crypto.createHash('sha1').update(password).digest('hex');
 }
 
-var Yeti = new Schema({
-    yeti_id   : String
-});
-
 var Test = new Schema({
     host      : String
   , port      : Number
@@ -18,7 +14,7 @@ var Test = new Schema({
   , verified  : Boolean
   , requests  : String
   , results   : String
-  , yetis     : [Yeti]
+  , yeti     : String
 });
 
 var Account = new Schema({
@@ -40,7 +36,6 @@ Account.statics.find_by_username_and_password = function(username, password, cb)
   })
 };
 
-exports.Yeti = mongoose.model('Yeti', Yeti);
 exports.Test = mongoose.model('Test', Test);
 exports.Account = mongoose.model('Account', Account);
 

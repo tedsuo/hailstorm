@@ -222,7 +222,7 @@ exports.routes = function(app){
     var test = req.account.tests.id(req.params.id);
     console.log(test);
     if(!test.verified) {
-      render('/dashboard');
+      res.render('dashboard');
       return;
     }
     res.render('test_run',_.extend(logged_in(req),{test : test})); 
@@ -259,6 +259,15 @@ exports.routes = function(app){
       });
       create_res.on('end', function(){
         var yeti = JSON.parse(data_buffer);
+        test.yeti=yeti.yeti_id;
+        console.log(test);
+        req.account.save(function(err){
+          if(err) {
+            console.log(err.message) ;
+          }else{
+            console.log('Saved yeti');
+          }
+        });
         setTimeout(function(){
           set_options = get_req_options();
           set_options.path = "/set/" + yeti.yeti_id;
@@ -336,7 +345,7 @@ exports.routes = function(app){
     if(!force_authentication(req, res)) return;
 
     if(req.body.submit == 'Cancel and go back') {
-      res.redirect('/dashboard');
+      res.redirect('dashboard');
       return;
     }
     var test = req.account.tests.id(req.params.id);
