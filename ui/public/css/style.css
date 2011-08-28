@@ -232,6 +232,10 @@ body {
   height: 100px;
 }
 
+#container{
+  margin-top: 15px;
+}
+
 #wrapper #paths {
   margin-bottom: 20px;
 }

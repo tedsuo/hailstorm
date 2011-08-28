@@ -19,7 +19,7 @@ function reduce(data){
   return(ret_series);
 }
 
-chart_data = function() {
+chart_data = function(data) {
    chart = new Highcharts.Chart({
       chart: {
          renderTo: 'container', 
