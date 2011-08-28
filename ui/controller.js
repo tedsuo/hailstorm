@@ -234,27 +234,56 @@ exports.routes = function(app){
   app.get('/test/data/:id',function(req, res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.params.id);
+    console.log(req.params);
+    console.log("daaaaaaaaaaaaaa");
+    console.log(test);
     if(!test.verified){
       render('/dashboard');
       return;
     }
     yeti_id = test.yeti;
-    report_options = get_req_options();
+    var report_options = get_req_options();
     report_options.path = '/report/' + yeti_id;
+    var report_data_buffer = '';
+    var status_options = get_req_options();
+    status_options.path = '/status/' + yeti_id;
+    var status_data_buffer = '';
+
+    report_responded = false;
+    status_responded = false;
     report = http.get(report_options, function(report_res){
-      data_buffer = '';
       report_res.on('data', function(data){
-        data_buffer += data;
+        report_data_buffer += data;
       });
       report_res.on('end', function(){
-        res.send(data_buffer);
+        report_responded = true;
+        if(status_responded == true){
+          send_responses(report_data_buffer, status_data_buffer, res);
+        }
       });
     }).on('error', function(e){
       res.send('Error: '+e.message);
     });
-  });
+    status = http.get(status_options, function(status_res){
+      status_res.on('data', function(data){
+        status_data_buffer += data;
+      });
+      status_res.on('end', function(){
+        status_responded = true;
+        if(report_responded == true){
+          send_responses(report_data_buffer, status_data_buffer, res);
+        }
+      });
+    }).on('error', function(e){
+      res.send('Error: '+e.message);
+    });
 
-  app.get('/test/:id', function(req, res){
+  });
+  function send_responses(report_data, status_data, res){
+    res.send({report: JSON.parse(report_data), status: JSON.parse(status_data)});
+  }
+
+  app.get('/test/report/:id', function(req, res){
         res.render('test_report',_.extend(logged_in(req),{id: req.params.id})); 
   });
 
@@ -326,7 +355,7 @@ exports.routes = function(app){
                   data_buffer += data;
                 });
                 start_res.on('end', function(){
-                  res.redirect('/test/' + test._id);
+                  res.redirect('/test/report/' + test._id);
                 });
               });
               start.end();
