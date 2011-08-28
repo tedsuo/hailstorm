@@ -26,12 +26,12 @@ var mc_client = dnode({
 });
 
 if(process.env.NODE_ENV == 'production'){
-  mc_client.connect('hailstorm.no.de',1337, function(remote, conn){
+  mc_client.connect('hailstorm.radicaldesigns.org',1337, function(remote, conn){
     mc_client.remote = remote;
     mc_client.remote_conn = conn;
     yeti.remote = remote;
     yeti.status = 'awaiting commands';
-    console.log('Connected to MC on hailstorm.no.de:1337\n Awaiting Orders...');
+    console.log('Connected to MC on hailstorm.radicaldesigns.org:1337\n Awaiting Orders...');
   });
 } else {
   mc_client.connect(1337, function(remote, conn){
