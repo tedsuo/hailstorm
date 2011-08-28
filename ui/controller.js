@@ -281,6 +281,7 @@ exports.routes = function(app){
       },
       concurrency : Number(req.body.concurrency), 
       max_requests : Number(req.body.max_requests),
+      test_id: test._id
     };
 
     payload = JSON.stringify(payload); 
