@@ -7,15 +7,18 @@ var yeti;
 // attacking or hibernating
 // total requests
 var client = dnode({
-  set :   function(settings, callback){
+  getId: function(callback){
+    callback(null, process.pid);
+  },
+  set: function(settings, callback){
     console.log(client.remote);
     yeti = new Yeti({remote:client.remote});
     yeti.set(settings, callback);
   },
-  start:  function(callback){
+  start: function(callback){
     yeti.start(callback);
   },
-  stop:   function(callback){
+  stop: function(callback){
     yeti.stop();
     callback(null, yeti.status);
   },
