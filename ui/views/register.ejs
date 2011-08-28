@@ -10,12 +10,12 @@
 
 <form action="/register" method="post">
   <div id="login">
-    <label for="{{ everyauth.password.loginFormFieldName }}">Login</label>
-    <input type="text" name="{{ everyauth.password.loginFormFieldName }}" value="{{ userParams[everyauth.password.loginFormFieldName] }}" />
+    <label for="username">Username</label>
+    <input type="text" name="username" value="" />
   </div>
   <div id="password">
-    <label for="{{ everyauth.password.passwordFormFieldName }}">Password</label>
-    <input type="password" name="{{ everyauth.password.passwordFormFieldName }}" value="{{ userParams[everyauth.password.passwordFormFieldName] }}" />
+    <label for="password">Password</label>
+    <input type="password" name="password" value="" />
   </div>
   <div id="submit">
     <input type="submit" value="Register" />

@@ -105,6 +105,11 @@ body {
     width: 680px;
 }
 
+#wrapper #content h2 {
+    font-family: SVBasicManualBook;
+    font-size: 26px;
+}
+
 #wrapper #content p {
     font-family: SVBasicManualBook;
     font-size: 18px;

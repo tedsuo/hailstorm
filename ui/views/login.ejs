@@ -1,20 +1,23 @@
-{{ if ('undefined' !== typeof errors && errors.length) { }}
-  <ul id=errors>
-    {{ each error in errors { }}
-      <li id="error"> {{= error}} </li>
+<h2>Login</h2>
+
+{{ if('undefined' !== typeof errors && errors.length) { }}
+  <ul id="errors">
+    {{ for(var i in errors) { }}
+      <li class="error">{{ errors[i] }}</li>
     {{ } }}
   </ul>
-{{ { }}
-<form action='/login' method='post'>
-  <div id='login'>
-    <label for='username'> Username </label>
-    <input type='text' name='username' value='username'></input>
+{{ } }}
+
+<form action="/login" method="post">
+  <div id="login">
+    <label for="username">Username</label>
+    <input type="text" name="username" value="" />
   </div>
-  <div id='password'>
-    <label for='password'> Password </label>
-    <input type='password' name='password' value='password'></input>
+  <div id="password">
+    <label for="password">Password</label>
+    <input type="password" name="password" value="" />
   </div>
-  <div id='submit'>
-    <input type='submit'>Login</input>
-  </div>  
+  <div id="submit">
+    <input type="submit" value="Login" />
+  </div>
 </form>
