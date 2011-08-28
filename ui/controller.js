@@ -146,23 +146,68 @@ exports.routes = function(app){
 
   app.post('/test/new',function(req,res){
     if(!force_authentication(req, res)) return;
+    console.log('/test/new');
+
+    // validation
+    var errors = [];
+    req.body.host = req.body.host.replace(/\/$/, ''); // remove trailing slash
+    if(!req.body.host || req.body.host == '') {
+      errors.push('Host is required');
+    } else {
+      var valid_ip_address = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+      var valid_hostname = "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$";
+      if(!req.body.host.match(valid_ip_address) && !req.body.host.match(valid_hostname)) 
+        errors.push('Invalid host');
+    }
+
+    req.body.port = Number(req.body.port);
+    if(req.body.port <= 0 || req.body.port > 65535)
+      errors.push('Invalid port');
     
+    if(req.body.protocol != 'http' && req.body.protocol != 'https') 
+      errors.push('Invalid protocol');
+
+    if(req.body.requests == '')
+      errors.push('You must start with at least one requests to send to the server');
+
+    if(errors.length) {
+      console.log('/test/new errors: '+JSON.stringify(errors));
+      res.render('dashboard', _.extend(logged_in(req), {
+        account: req.account,
+        errors: errors,
+        test_host: req.body.host,
+        test_port: req.body.port,
+        test_protocol: req.body.protocol,
+        test_requests: req.body.requests
+      }));
+      return;
+    }
+
+    // make the paths
     var paths = req.body.requests.split('\r\n');
     var requests = [];
-    for( var i in paths) {
-      requests.push({ method : 'GET', path : paths[i], body : '' });
+    for(var i in paths) {
+      var path = paths[i];
+      if(path.substring(0, 1) != '/')
+        path = '/'+path;
+      requests.push({ method:'GET', path:path, body:'' });
     }
     var test = {
-      host : req.body.url,
-      port : 80,
-      protocol : 'http',
+      host : req.body.host,
+      port : req.body.port,
+      protocol : req.body.protocol,
       verified : false,
       requests : requests,
       results : []
     };
     req.account.tests.push(test);
-    req.account.save();
-    res.redirect('/dashboard');
+    req.account.save(function(err){
+      if(err) {
+        console.log('error saving account: '+err);
+      } else {
+        res.redirect('/dashboard');
+      }
+    });
   });
 
   app.get('/test/run/:id',function(req,res){

@@ -103,6 +103,7 @@ body {
 }
 
 #wrapper #content {
+  font-family: SVBasicManualBook;
   position: absolute;
   top: 250px;
   left: 280px;
@@ -111,17 +112,14 @@ body {
 }
 
 #wrapper #content h2 {
-  font-family: SVBasicManualBook;
   font-size: 26px;
 }
 
 #wrapper #content h3 {
-  font-family: SVBasicManualBook;
   font-size: 20px;
 }
 
 #wrapper #content p {
-  font-family: SVBasicManualBook;
   font-size: 18px;
 }
 
@@ -175,5 +173,62 @@ body {
   border: 0;
   font-size: 18px;
   font-weight: bold;
+}
+
+#wrapper table#tests {
+  width: 100%;
+  background-color: #000000;
+  border: 2px solid #333333;
+}
+
+#wrapper table#tests th {
+  text-align: left;
+  font-weight: bold;
+  background-color: #333333;
+  padding: 5px;
+}
+
+#wrapper table#tests td {
+  padding: 5px;
+}
+
+#wrapper table#tests td .verified {
+  color: #00ff00;
+}
+
+#wrapper table#tests td.commands a, #wrapper table#tests td .unverified a {
+  background-color: #004c8c;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  border: 0;
+}
+
+#wrapper #test-form {
+  background-color: #000000;
+  border: 2px solid #333333;
+  padding: 10px;
+}
+#wrapper #test-form label {
+  width: 100%;
+  display: block;
+  margin-bottom: 5px;
+}
+#wrapper #test-form #target-container {
+  margin-bottom: 20px;
+}
+#wrapper #test-form #protocol {
+  font-family: SVBasicManualBook;
+}
+#wrapper #test-form #host {
+  width: 200px;
+}
+#wrapper #test-form #port {
+  width: 50px;
+}
+#wrapper #test-form #requests {
+  width: 600px;;
+  height: 100px;
 }
 
