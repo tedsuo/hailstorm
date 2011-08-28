@@ -16,7 +16,7 @@ function obj_length(obj){
 
 var yeti_server_port = parseInt(process.env.YETI_DNODE_PORT) || 1337;
 var yeti_server = dnode(function (client, conn){
-  var yeti = {client: client, conn: conn, data:{}}
+  var yeti = {client: client, conn: conn, data:{}, max_responses: 0};
   conn.on('ready',function(){
     client.getId( function(err,id){
       console.log('yeti '+id+' arrived');
@@ -44,6 +44,9 @@ var yeti_server = dnode(function (client, conn){
       yeti.data[result.status_code][rounded_start_time][rounded_response] = 0;
     }
     yeti.data[result.status_code][rounded_start_time][rounded_response]++;
+    if(yeti.data[result.status_code][rounded_start_time][rounded_response] > yeti.max_responses){
+      yeti.max_responses = yeti.data[result.status_code][rounded_start_time][rounded_response];
+    }
   }
 }).listen(yeti_server_port);
 console.log('yeti server listening on ' + yeti_server_port);
@@ -181,7 +184,7 @@ var mc = {
       res.writeHead(200);
       res.end();
     }
-    res.send(JSON.stringify(yeti.data));
+    res.send(JSON.stringify({data: yeti.data, max_responses: yeti.max_responses}));
   }
 }
 
