@@ -231,13 +231,12 @@ exports.routes = function(app){
 
   app.get('/test/data/:id',function(req, res){
     if(!force_authentication(req, res)) return;
-/*    var test = req.account.tests.id(req.params.id);
-    console.log(test);
+    var test = req.account.tests.id(req.params.id);
     if(!test.verified){
       render('/dashboard');
       return;
-    }*/
-    yeti_id = req.params.id;
+    }
+    yeti_id = test.yeti;
     report_options = get_req_options();
     report_options.path = '/report/' + yeti_id;
     report = http.get(report_options, function(report_res){
@@ -318,7 +317,7 @@ exports.routes = function(app){
                   data_buffer += data;
                 });
                 start_res.on('end', function(){
-                  res.redirect('/test/' + yeti.yeti_id);
+                  res.redirect('/test/' + test._id);
                 });
               });
               start.end();

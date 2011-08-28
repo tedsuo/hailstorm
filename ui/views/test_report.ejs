@@ -2,7 +2,7 @@
   $(document).ready(function(){
     setInterval(function(){
       $.ajax({
-        url: '/test/data/' + {{= id}},
+        url: '/test/data/{{= id}}',
         type: 'get',
         dataType: 'json',
         success: function(data){
