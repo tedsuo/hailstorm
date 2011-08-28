@@ -229,6 +229,30 @@ exports.routes = function(app){
     res.render('test_run',_.extend(logged_in(req),{test : test})); 
   });
 
+  app.get('/test/report/:id',function(req, res){
+    if(!force_authentication(req, res)) return;
+/*    var test = req.account.tests.id(req.params.id);
+    console.log(test);
+    if(!test.verified){
+      render('/dashboard');
+      return;
+    }*/
+    yeti_id = req.params.id;
+    report_options = get_req_options();
+    report_options.path = '/report/' + yeti_id;
+    report = http.get(report_options, function(report_res){
+      data_buffer = '';
+      report_res.on('data', function(data){
+        data_buffer += data;
+      });
+      report_res.on('end', function(){
+        res.render('test_report',_.extend(logged_in(req),{data : data_buffer})); 
+      });
+    }).on('error', function(e){
+      res.send('Error: '+e.message);
+    });
+  });
+
   app.post('/test/run', function(req, res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.body.test_id);
