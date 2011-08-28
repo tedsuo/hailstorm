@@ -1,5 +1,6 @@
 var http = require('http');
 var https = require('https');
+var dns = require('dns');
 
 var Yeti = function(o){
   this.remote = undefined;
@@ -9,18 +10,32 @@ var Yeti = function(o){
 };
 
 Yeti.prototype.set = function(settings, callback){
+  var yeti = this;
   // expects post body to be a json object with: protocol (http or https), port, host, requests, max_requests, concurrency
   this.stop(); // hammer time
   // TODO: needs error checking on settings 
   this.settings = JSON.parse(settings);
-  this.settings.status = 'awaiting commands';
+  var ipaddr_regex = new RegExp("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$");
+  if(!this.settings.host.match(ipaddr_regex)){
+    dns.lookup(this.settings.host, function(err, addr){
+      yeti.settings.ipaddr = addr;
+      yeti.after_set(callback);
+    });
+  } else {
+    this.settings.ipaddr = this.settings.host;
+    this.after_set(callback);
+  }
+};
 
-  this.agent = this.get_protocol().globalAgent;
+Yeti.prototype.after_set = function(callback){
+  this.status = 'awaiting commands';
+  this.settings.current_request_id = 0;
+  this.agent = new http.Agent();
   this.agent.maxSockets = this.settings.concurrency;
 
   console.log(this.settings);
-  callback(null, this.settings.status);
-};
+  callback(null, this.status);
+}
 
 // returns http or https
 Yeti.prototype.get_protocol = function() {
@@ -31,36 +46,43 @@ Yeti.prototype.get_protocol = function() {
 };
 
 Yeti.prototype.start = function(callback){
-  this.settings.status = 'attacking';
-  console.log(this.settings.status);
-  callback(null, this.settings.status);
+  this.status = 'attacking';
+  console.log(this.status);
+  callback(null, this.status);
   this.num_requests = 0;
   this.request_log = [];
   this.requests_sent = 0;
-  while(this.num_requests < this.settings.max_requests) {
-    this.settings.requests.forEach(this.attack.bind(this));
+  var initial_queue_size = this.settings.concurrency * 2;
+  for( var i=0; i < initial_queue_size; i++) {
+    this.attack();
   }
 };
 
+Yeti.prototype.queue_attack = function(){
+  this.attack(this.num_requests);
+};
+
 Yeti.prototype.stop = function() {
-  this.settings.status = 'hibernating';
-  if(this.agent) this.agent.queue = [];
+  this.status = 'hibernating';
+  if(this.agent) this.agent.requests = {};
 };
 
 Yeti.prototype.status = function(callback) {
   if(this.settings.max_requests == this.requests_sent) {
-      this.settings.status = 'catching breath';
+      this.status = 'catching breath';
   }
 
   callback({
-      status: this.settings.status,
+      status: this.status,
       requests_sent: this.requests_sent
   });
 };
 
-Yeti.prototype.attack = function(req_data){
+Yeti.prototype.attack = function(){
+  if(this.num_requests >= this.settings.max_requests || this.status != "attacking") return;
+
   var yeti = this;
-  if(this.num_requests == this.settings.max_requests) return;      
+  var req_data = this.settings.requests[this.settings.current_request_id]
   var request_id = this.num_requests;
   this.request_log[request_id] = {};
   
@@ -74,14 +96,16 @@ Yeti.prototype.attack = function(req_data){
 
   // make the request
   var options = {
-    host: this.settings.host,
+    host: this.settings.ipaddr,
     port: this.settings.port,
     method: req_data.method,
     path: req_data.path,
+    agent: this.agent,
     headers: {
         //'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:6.0) Gecko/20100101 Firefox/6.0',
         'User-Agent': 'I AM YETI AND YOU ARE STUCK IN HAILSTORM',
-        'Connection': 'keep-alive'
+        'Connection': 'keep-alive',
+        'Host': this.settings.host
     }
   }
   
@@ -104,6 +128,11 @@ Yeti.prototype.attack = function(req_data){
   req.end();
 
   this.num_requests++;
+  if(this.settings.current_request_id < this.settings.requests.length - 1){
+    this.settings.current_request_id++;
+  } else {
+    this.settings.current_request_id = 0;
+  }
 };
 
 Yeti.prototype.on_request_start = function(request_id){
@@ -111,6 +140,9 @@ Yeti.prototype.on_request_start = function(request_id){
 };
 
 Yeti.prototype.on_request_end = function(request_id,res){
+  // queue up another request
+  this.attack();
+  // log result
   this.request_log[request_id].end_time = new Date().getTime();
   this.request_log[request_id].response_time = this.request_log[request_id].end_time - this.request_log[request_id].start_time;
   this.request_log[request_id].status_code = res.statusCode;          
