@@ -4,7 +4,7 @@
 {{= test.protocol }}://{{= test.host }}{{ if((test.protocol == 'http' && test.port != 80) || (test.protocol == 'https' && test.port != 443)) { }}:{{= test.port }}{{ } }}</p>
 <p><strong>Requests:</strong><br>
 {{ for(var i=0; i<requests.length; i++) { }}
-{{= requests[i].method }} {{= requests[i].path }} {{= requests[i].body }}<br/>
+ &nbsp; &nbsp; {{= requests[i].method }} {{= requests[i].path }} {{= requests[i].body }}<br/>
 {{ } }}
 </p>
 
