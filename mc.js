@@ -8,14 +8,6 @@ var model = require('./ui/model');
 var yetis = {};
 var cloud = {};
 
-function obj_length(obj){
-  var x = 0;
-  for(i in obj){
-    x++;
-  }
-  return x;
-}
-
 var yeti_server_port = parseInt(process.env.YETI_DNODE_PORT) || 1337;
 var yeti_server = dnode(function (client, conn){
   var yeti = {client: client, conn: conn, data:{}}
