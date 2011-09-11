@@ -2,7 +2,7 @@ var _ = require('underscore');
 var crypto = require('crypto');
 var http = require('http');
 var https = require('https');
-var model = require('./model');
+var model = require('../model');
 var http = require('http');
 var async = require('async');
 

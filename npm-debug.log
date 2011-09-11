@@ -1,0 +1,422 @@
+info it worked if it ends with ok
+verbose cli [ 'node',
+verbose cli   '/Users/devel/Sites/node/bin/npm',
+verbose cli   'install',
+verbose cli   '../yeti' ]
+info using npm@1.0.27
+info using node@v0.4.11
+verbose config file /Users/devel/.npmrc
+verbose config file /Users/devel/Sites/node/etc/npmrc
+silly testEngine { author: { name: 'tedsuo,Hainish,micahflee,cooperq' },
+silly testEngine   name: 'hailstorm',
+silly testEngine   description: 'an open source load testing environment',
+silly testEngine   version: '0.0.0',
+silly testEngine   main: 'server',
+silly testEngine   repository: { url: 'git@github.com:tedsuo/hailstorm.git' },
+silly testEngine   engines: { node: '~v0.4.11' },
+silly testEngine   dependencies: 
+silly testEngine    { express: '>=2.4.6',
+silly testEngine      ejs: '>=0.4.3',
+silly testEngine      dnode: '>=0.8.2',
+silly testEngine      underscore: '>=1.1.7',
+silly testEngine      mongoose: '~2.0.2',
+silly testEngine      async: '>=0.1.9' },
+silly testEngine   devDependencies: {},
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/Users/devel/Sites/hailstorm/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: true },
+silly testEngine   _id: 'hailstorm@0.0.0',
+silly testEngine   scripts: { start: 'node server.js' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true }
+verbose caching /Users/devel/Sites/hailstorm/package.json
+verbose loadDefaults hailstorm@0.0.0
+silly testEngine { name: 'async',
+silly testEngine   description: 'Higher-order functions and common patterns for asynchronous code',
+silly testEngine   main: './index',
+silly testEngine   author: { name: 'Caolan McMahon' },
+silly testEngine   version: '0.1.9',
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/caolan/async.git' },
+silly testEngine   bugs: { url: 'http://github.com/caolan/async/issues' },
+silly testEngine   licenses: 
+silly testEngine    [ { type: 'MIT',
+silly testEngine        url: 'http://github.com/caolan/async/raw/master/LICENSE' } ],
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/Users/devel/Sites/hailstorm/node_modules/async/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'async@0.1.9',
+silly testEngine   dependencies: {},
+silly testEngine   devDependencies: {},
+silly testEngine   engines: { node: '*' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true }
+verbose caching /Users/devel/Sites/hailstorm/node_modules/async/package.json
+verbose loadDefaults async@0.1.9
+silly testEngine { name: 'dnode',
+silly testEngine   version: '0.8.2',
+silly testEngine   description: 'freestyle RPC',
+silly testEngine   main: './index.js',
+silly testEngine   keywords: 
+silly testEngine    [ 'message passing',
+silly testEngine      'rpc',
+silly testEngine      'rmi',
+silly testEngine      'drb',
+silly testEngine      'remote',
+silly testEngine      'communication',
+silly testEngine      'websockets',
+silly testEngine      'socket.io' ],
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/substack/dnode.git' },
+silly testEngine   directories: { lib: '.', examples: './examples' },
+silly testEngine   dependencies: 
+silly testEngine    { 'socket.io': '>=0.6.1 <0.7',
+silly testEngine      lazy: '>=1.0.5 <1.1',
+silly testEngine      traverse: '0.4.x',
+silly testEngine      'dnode-protocol': '>=0.0.12 <0.1' },
+silly testEngine   devDependencies: 
+silly testEngine    { expresso: '0.7.x',
+silly testEngine      browserify: '1.4.x',
+silly testEngine      'uglify-js': '1.0.6' },
+silly testEngine   browserify: 'browser/index.js',
+silly testEngine   engine: { node: '>=0.4.0' },
+silly testEngine   author: 
+silly testEngine    { name: 'James Halliday',
+silly testEngine      email: 'mail@substack.net',
+silly testEngine      url: 'http://substack.net' },
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/Users/devel/Sites/hailstorm/node_modules/dnode/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'dnode@0.8.2',
+silly testEngine   engines: { node: '*' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true }
+verbose caching /Users/devel/Sites/hailstorm/node_modules/dnode/package.json
+verbose loadDefaults dnode@0.8.2
+silly testEngine { name: 'ejs',
+silly testEngine   description: 'Embedded JavaScript templates',
+silly testEngine   version: '0.4.3',
+silly testEngine   author: 
+silly testEngine    { name: 'TJ Holowaychuk',
+silly testEngine      email: 'tj@vision-media.ca' },
+silly testEngine   keywords: [ 'template', 'engine', 'ejs' ],
+silly testEngine   main: './lib/ejs.js',
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/Users/devel/Sites/hailstorm/node_modules/ejs/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'ejs@0.4.3',
+silly testEngine   dependencies: {},
+silly testEngine   devDependencies: {},
+silly testEngine   engines: { node: '*' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true }
+verbose caching /Users/devel/Sites/hailstorm/node_modules/ejs/package.json
+verbose loadDefaults ejs@0.4.3
+silly testEngine { name: 'express',
+silly testEngine   description: 'Sinatra inspired web development framework',
+silly testEngine   version: '2.4.6',
+silly testEngine   author: 
+silly testEngine    { name: 'TJ Holowaychuk',
+silly testEngine      email: 'tj@vision-media.ca' },
+silly testEngine   contributors: 
+silly testEngine    [ { name: 'TJ Holowaychuk',
+silly testEngine        email: 'tj@vision-media.ca' },
+silly testEngine      { name: 'Aaron Heckmann',
+silly testEngine        email: 'aaron.heckmann+github@gmail.com' },
+silly testEngine      { name: 'Ciaran Jessup', email: 'ciaranj@gmail.com' },
+silly testEngine      { name: 'Guillermo Rauch', email: 'rauchg@gmail.com' } ],
+silly testEngine   dependencies: 
+silly testEngine    { connect: '>= 1.5.2 < 2.0.0',
+silly testEngine      mime: '>= 0.0.1',
+silly testEngine      qs: '>= 0.3.1' },
+silly testEngine   devDependencies: 
+silly testEngine    { 'connect-form': '0.2.1',
+silly testEngine      ejs: '0.4.2',
+silly testEngine      expresso: '0.7.2',
+silly testEngine      hamljs: '0.5.1',
+silly testEngine      jade: '0.11.0',
+silly testEngine      stylus: '0.13.0',
+silly testEngine      should: '0.2.1',
+silly testEngine      'express-messages': '0.0.2',
+silly testEngine      'node-markdown': '>= 0.0.1',
+silly testEngine      'connect-redis': '>= 0.0.1' },
+silly testEngine   keywords: [ 'framework', 'sinatra', 'web', 'rest', 'restful' ],
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/visionmedia/express.git' },
+silly testEngine   main: 'index',
+silly testEngine   bin: { express: './bin/express' },
+silly testEngine   scripts: { test: 'make test', prepublish: 'npm prune' },
+silly testEngine   engines: { node: '>= 0.4.1 < 0.5.0' },
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/Users/devel/Sites/hailstorm/node_modules/express/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'express@2.4.6',
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true }
+verbose caching /Users/devel/Sites/hailstorm/node_modules/express/package.json
+verbose loadDefaults express@2.4.6
+silly testEngine { name: 'mongoose',
+silly testEngine   description: 'Mongoose MongoDB ORM',
+silly testEngine   version: '2.0.4',
+silly testEngine   author: 
+silly testEngine    { name: 'Guillermo Rauch',
+silly testEngine      email: 'guillermo@learnboost.com' },
+silly testEngine   keywords: 
+silly testEngine    [ 'mongodb',
+silly testEngine      'mongoose',
+silly testEngine      'orm',
+silly testEngine      'data',
+silly testEngine      'datastore',
+silly testEngine      'nosql' ],
+silly testEngine   dependencies: { hooks: '0.1.9', mongodb: '0.9.6-7', colors: '0.5.0' },
+silly testEngine   devDependencies: { should: '0.2.1' },
+silly testEngine   directories: { lib: './lib/mongoose' },
+silly testEngine   scripts: { test: 'make test' },
+silly testEngine   main: './index.js',
+silly testEngine   engines: { node: '>= 0.2.0' },
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/LearnBoost/mongoose.git' },
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/Users/devel/Sites/hailstorm/node_modules/mongoose/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'mongoose@2.0.4',
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true }
+verbose caching /Users/devel/Sites/hailstorm/node_modules/mongoose/package.json
+verbose loadDefaults mongoose@2.0.4
+silly testEngine { name: 'underscore',
+silly testEngine   description: 'JavaScript\'s functional programming helper library.',
+silly testEngine   homepage: 'http://documentcloud.github.com/underscore/',
+silly testEngine   keywords: [ 'util', 'functional', 'server', 'client', 'browser' ],
+silly testEngine   author: 
+silly testEngine    { name: 'Jeremy Ashkenas',
+silly testEngine      email: 'jeremy@documentcloud.org' },
+silly testEngine   contributors: [],
+silly testEngine   dependencies: {},
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/documentcloud/underscore.git' },
+silly testEngine   main: 'underscore.js',
+silly testEngine   version: '1.1.7',
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/Users/devel/Sites/hailstorm/node_modules/underscore/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'underscore@1.1.7',
+silly testEngine   devDependencies: {},
+silly testEngine   engines: { node: '*' },
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true }
+verbose caching /Users/devel/Sites/hailstorm/node_modules/underscore/package.json
+verbose loadDefaults underscore@1.1.7
+verbose from cache /Users/devel/Sites/hailstorm/package.json
+verbose into /Users/devel/Sites/hailstorm [ '../yeti' ]
+verbose cache add ../yeti
+verbose cache add [ '../yeti', null ]
+silly cache add: name, spec, args [ undefined, '../yeti', [ '../yeti', null ] ]
+verbose parsed url { pathname: '../yeti', href: '../yeti' }
+silly testEngine { author: '',
+silly testEngine   name: 'yeti',
+silly testEngine   description: 'load testing bot for hailstorm',
+silly testEngine   version: '0.0.0',
+silly testEngine   repository: { url: '' },
+silly testEngine   engines: { node: '>=v0.5.5' },
+silly testEngine   dependencies: { dnode: '>=0.8.2', underscore: '>=1.1.7' },
+silly testEngine   devDependencies: {},
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '../yeti/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'yeti@0.0.0',
+silly testEngine   _engineSupported: false,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true,
+silly testEngine   path: '/Users/devel/Sites/yeti',
+silly testEngine   bundleDependencies: [] }
+verbose caching ../yeti/package.json
+verbose loadDefaults yeti@0.0.0
+verbose pack /Users/devel/Sites/yeti /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/tmp.tgz
+verbose from cache /Users/devel/Sites/hailstorm/package.json
+verbose mkdir (expected) error ENOENT, No such file or directory '/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768'
+verbose mkdir (expected) error ENOENT, No such file or directory '/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943'
+verbose mkdir done: /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943 755
+verbose mkdir'ed /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943
+verbose tar about to write tar and gzip it.
+silly tar args [ '-cvf',
+silly tar args   '-',
+silly tar args   'yeti/.gitignore',
+silly tar args   'yeti/cloud.js',
+silly tar args   'yeti/cloud_server.js',
+silly tar args   'yeti/package.json',
+silly tar args   'yeti/Yeti.js',
+silly tar args   'yeti/yeti_server.js' ]
+verbose success tar -cvf - <file list elided>
+verbose success gzip "--stdout"
+verbose mkdir (expected) error ENOENT, No such file or directory '/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents'
+verbose mkdir (expected) error ENOENT, No such file or directory '/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm'
+verbose mkdir done: /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm 755
+verbose unpack_ uid, gid [ undefined, undefined ]
+verbose unpackTarget /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/package
+silly gunzTarPerm modes [ '755', '644' ]
+verbose success gzip "--decompress" "--stdout" "/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/tmp.tgz"
+verbose success tar "-mvxpf" "-" "-o" "-C" "/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm"
+silly asyncMap in gTP /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti/
+silly asyncMap in gTP /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti/.gitignore
+silly asyncMap in gTP /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti/cloud.js
+silly asyncMap in gTP /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti/cloud_server.js
+silly asyncMap in gTP /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti/package.json
+silly asyncMap in gTP /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti/Yeti.js
+silly asyncMap in gTP /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti/yeti_server.js
+verbose gunzed /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti
+verbose rm'ed /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/package
+verbose renamed [ '/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/___package.npm/yeti',
+verbose renamed   '/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/package' ]
+silly testEngine { author: '',
+silly testEngine   name: 'yeti',
+silly testEngine   description: 'load testing bot for hailstorm',
+silly testEngine   version: '0.0.0',
+silly testEngine   repository: { url: '' },
+silly testEngine   engines: { node: '>=v0.5.5' },
+silly testEngine   dependencies: { dnode: '>=0.8.2', underscore: '>=1.1.7' },
+silly testEngine   devDependencies: {},
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/package/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'yeti@0.0.0',
+silly testEngine   _engineSupported: false,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true,
+silly testEngine   path: '/var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/package' }
+verbose caching /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/package/package.json
+verbose loadDefaults yeti@0.0.0
+verbose tarball contents [ 'package' ]
+verbose from cache /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/package/package.json
+verbose pack /var/folders/Hk/HkV0QyoIHXGfCxL9XjVJSU+++TQ/-Tmp-/npm-1315779205768/1315779205768-0.4074964998289943/contents/package /Users/devel/.npm/yeti/0.0.0/package.tgz
+verbose mkdir (expected) error ENOENT, No such file or directory '/Users/devel/.npm/yeti'
+verbose mkdir (expected) error ENOENT, No such file or directory '/Users/devel/.npm/yeti/0.0.0'
+verbose mkdir done: /Users/devel/.npm/yeti/0.0.0 755
+verbose mkdir'ed /Users/devel/.npm/yeti/0.0.0
+verbose tar about to write tar and gzip it.
+silly tar args [ '-cvf',
+silly tar args   '-',
+silly tar args   'package/.gitignore',
+silly tar args   'package/cloud.js',
+silly tar args   'package/cloud_server.js',
+silly tar args   'package/package.json',
+silly tar args   'package/Yeti.js',
+silly tar args   'package/yeti_server.js' ]
+verbose success tar -cvf - <file list elided>
+verbose success gzip "--stdout"
+verbose mkdir (expected) error ENOENT, No such file or directory '/Users/devel/.npm/yeti/0.0.0/___package.npm'
+verbose mkdir done: /Users/devel/.npm/yeti/0.0.0/___package.npm 755
+verbose unpack_ uid, gid [ undefined, undefined ]
+verbose unpackTarget /Users/devel/.npm/yeti/0.0.0/package
+silly gunzTarPerm modes [ '755', '644' ]
+verbose success gzip "--decompress" "--stdout" "/Users/devel/.npm/yeti/0.0.0/package.tgz"
+verbose success tar "-mvxpf" "-" "-o" "-C" "/Users/devel/.npm/yeti/0.0.0/___package.npm"
+silly asyncMap in gTP /Users/devel/.npm/yeti/0.0.0/___package.npm/package/
+silly asyncMap in gTP /Users/devel/.npm/yeti/0.0.0/___package.npm/package/.gitignore
+silly asyncMap in gTP /Users/devel/.npm/yeti/0.0.0/___package.npm/package/cloud.js
+silly asyncMap in gTP /Users/devel/.npm/yeti/0.0.0/___package.npm/package/cloud_server.js
+silly asyncMap in gTP /Users/devel/.npm/yeti/0.0.0/___package.npm/package/package.json
+silly asyncMap in gTP /Users/devel/.npm/yeti/0.0.0/___package.npm/package/Yeti.js
+silly asyncMap in gTP /Users/devel/.npm/yeti/0.0.0/___package.npm/package/yeti_server.js
+verbose gunzed /Users/devel/.npm/yeti/0.0.0/___package.npm/package
+verbose rm'ed /Users/devel/.npm/yeti/0.0.0/package
+verbose renamed [ '/Users/devel/.npm/yeti/0.0.0/___package.npm/package',
+verbose renamed   '/Users/devel/.npm/yeti/0.0.0/package' ]
+silly testEngine { author: '',
+silly testEngine   name: 'yeti',
+silly testEngine   description: 'load testing bot for hailstorm',
+silly testEngine   version: '0.0.0',
+silly testEngine   repository: { url: '' },
+silly testEngine   engines: { node: '>=v0.5.5' },
+silly testEngine   dependencies: { dnode: '>=0.8.2', underscore: '>=1.1.7' },
+silly testEngine   devDependencies: {},
+silly testEngine   _npmJsonOpts: 
+silly testEngine    { file: '/Users/devel/.npm/yeti/0.0.0/package/package.json',
+silly testEngine      wscript: false,
+silly testEngine      contributors: false,
+silly testEngine      serverjs: false },
+silly testEngine   _id: 'yeti@0.0.0',
+silly testEngine   _engineSupported: false,
+silly testEngine   _npmVersion: '1.0.27',
+silly testEngine   _nodeVersion: 'v0.4.11',
+silly testEngine   _defaultsLoaded: true,
+silly testEngine   dist: { shasum: 'ddf2f0f508b07723011a6206131a28468fde1b90' } }
+verbose caching /Users/devel/.npm/yeti/0.0.0/package/package.json
+verbose loadDefaults yeti@0.0.0
+silly updated sha bytes 2684
+info shasum ddf2f0f508b07723011a6206131a28468fde1b90
+info shasum /Users/devel/.npm/yeti/0.0.0/package.tgz
+verbose from cache /Users/devel/.npm/yeti/0.0.0/package/package.json
+verbose chmod /Users/devel/.npm/yeti/0.0.0/package.tgz 644
+silly resolved [ { author: '',
+silly resolved     name: 'yeti',
+silly resolved     description: 'load testing bot for hailstorm',
+silly resolved     version: '0.0.0',
+silly resolved     repository: { url: '' },
+silly resolved     engines: { node: '>=v0.5.5' },
+silly resolved     dependencies: { dnode: '>=0.8.2', underscore: '>=1.1.7' },
+silly resolved     devDependencies: {},
+silly resolved     _npmJsonOpts: 
+silly resolved      { file: '/Users/devel/.npm/yeti/0.0.0/package/package.json',
+silly resolved        wscript: false,
+silly resolved        contributors: false,
+silly resolved        serverjs: false },
+silly resolved     _id: 'yeti@0.0.0',
+silly resolved     _engineSupported: false,
+silly resolved     _npmVersion: '1.0.27',
+silly resolved     _nodeVersion: 'v0.4.11',
+silly resolved     _defaultsLoaded: true,
+silly resolved     dist: { shasum: 'ddf2f0f508b07723011a6206131a28468fde1b90' } } ]
+info into /Users/devel/Sites/hailstorm yeti@0.0.0
+info installOne yeti@0.0.0
+verbose installOne cb yeti@0.0.0
+ERR! Unsupported
+ERR! Not compatible with your version of node/npm: yeti@0.0.0
+ERR! Required: {"node":">=v0.5.5"}
+ERR! Actual:   {"npm":"1.0.27","node":"v0.4.11"}
+ERR! 
+ERR! System Darwin 9.8.0
+ERR! command "node" "/Users/devel/Sites/node/bin/npm" "install" "../yeti"
+ERR! cwd /Users/devel/Sites/hailstorm
+ERR! node -v v0.4.11
+ERR! npm -v 1.0.27
+verbose exit [ 1, true ]

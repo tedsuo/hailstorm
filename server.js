@@ -14,7 +14,7 @@ ui.on('exit', function(code){ console.log('UI exited with code '+code); });
 console.log('UI has been spawned');
 
 // spawn the MC
-var mc = spawn(process.argv[0], ['mc.js'], { cwd: __dirname });
+var mc = spawn(process.argv[0], ['server.js'], { cwd: __dirname + '/mc/'});
 mc.stdout.on('data', function(data){ log('MC stdout', data); });
 mc.stderr.on('data', function(data){ log('MC stderr', data); });
 mc.on('exit', function(code){ console.log('MC exited with code '+code); });

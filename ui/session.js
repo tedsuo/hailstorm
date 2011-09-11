@@ -1,4 +1,4 @@
-var model = require('./model');
+var model = require('../model');
 
 exports.load_account = function(){
   return function(req, res, next){
