@@ -4,6 +4,7 @@ var http = require('http');
 var https = require('https');
 var model = require('./model');
 var http = require('http');
+var async = require('async');
 
 function force_authentication(req, res) {
   if(req.account) {
@@ -11,13 +12,6 @@ function force_authentication(req, res) {
   }
   res.redirect('/login');
   return false;
-}
-
-function get_req_options(){
-  return { 
-    host: "127.0.0.1", 
-    port : 31337
-  };
 }
 
 function logged_in(req) {
@@ -41,7 +35,12 @@ function verify_website(test) {
   return website;
 }
 
-exports.routes = function(app){
+function handle_error(res, err){
+  res.writeHead(500);
+  res.end('Error: '+err);
+}
+
+exports.routes = function(app, mc_client){
   app.get('/',function(req,res){
     res.render('index', logged_in(req));
   });
@@ -237,62 +236,37 @@ exports.routes = function(app){
     if(!test.verified){
       res.send('permission denied');
       return;
-    }/*
-    if(!test.running){
-      console.log('test not running');
-      send_responses(test.results, {status:"finished"}, res);
-      return;
-    }*/
-    yeti_id = test.yeti;
-    var report_options = get_req_options();
-    report_options.path = '/report/' + yeti_id;
-    var report_data_buffer = '';
-    var status_options = get_req_options();
-    status_options.path = '/status/' + yeti_id;
-    var status_data_buffer = '';
-
-    report_responded = false;
-    status_responded = false;
-    report = http.get(report_options, function(report_res){
-      report_res.on('data', function(data){
-        report_data_buffer += data;
-      });
-      report_res.on('end', function(){
-        report_responded = true;
-        if(status_responded == true){
-          console.log('test running');
-          send_responses(report_data_buffer, status_data_buffer, res);
-        }
-      });
-    }).on('error', function(e){
-      res.send('Error: '+e.message);
-    });
-    status = http.get(status_options, function(status_res){
-      status_res.on('data', function(data){
-        status_data_buffer += data;
-      });
-      status_res.on('end', function(){
-        status_responded = true;
-        if(report_responded == true){
-          console.log('test running');
-          send_responses(report_data_buffer, status_data_buffer, res);
-        }
-      });
-    }).on('error', function(e){
-      res.send('Error: '+e.message);
-    });
-
-  });
-  function send_responses(report_data, status_data, res){
-    console.log('Report Data: ');
-    console.log(report_data);
-    try{
-      res.send({report: JSON.parse(report_data), status: JSON.parse(status_data)});
-    } catch(err){
-      console.log(err);
-      res.send({report:{},status:{}});
     }
-  }
+    
+    yeti_id = test.yeti;
+
+    async.parallel({
+      report: function(callback){
+        mc_client.remote.report(yeti_id, function(err, report_res){
+          if(err){
+            callback(err);
+          } else {
+            callback(null, report_res);
+          }
+        });
+      },
+      status: function(callback){
+        mc_client.remote.status(yeti_id, function(err, status_res){
+          if(err){
+            callback(err);
+          } else {
+            callback(null, status_res);
+          }
+        });
+      }
+    }, function(err, results){
+      if(err){
+        handle_error(res, err);
+      } else {
+        res.send(results);
+      }
+    });
+  });
 
   app.get('/test/report/:id', function(req, res){
     if(!force_authentication(req, res)) return;
@@ -326,18 +300,12 @@ exports.routes = function(app){
       test_id: test._id
     };
 
-    payload = JSON.stringify(payload); 
     console.log(payload);
-    var create_options = get_req_options();
-    create_options.path = "/create";
-    create_options.method = "POST";
-    var create = http.request(create_options,function(create_res){
-      var data_buffer = '';
-      create_res.on('data', function(data){
-        data_buffer += data;
-      });
-      create_res.on('end', function(){
-        var yeti = JSON.parse(data_buffer);
+    mc_client.remote.create(function(err, create_res){
+      if(err){
+        handle_error(res, err);
+      } else {
+        var yeti = create_res;
         test.yeti=yeti.yeti_id;
         console.log(test);
         req.account.save(function(err){
@@ -348,56 +316,25 @@ exports.routes = function(app){
           }
         });
         setTimeout(function(){
-          set_options = get_req_options();
-          set_options.path = "/set/" + yeti.yeti_id;
-          set_options.method = "POST";
-          set_options.headers = {"Content-Type" : "application/json"};
-          var set = http.request(set_options, function(set_res){
-            console.log('set begin');
-            var data_buffer = '';
-            set_res.on('data', function(data){
-              data_buffer += data;
-            });
-            set_res.on('end', function(){
-              start_options = get_req_options();
-              start_options.path = "/start/" + yeti.yeti_id;
-              start_options.method = "POST";
-              var start = http.request(start_options, function(start_res){
-                var data_buffer = '';
-                start_res.on('data', function(data){
-                  data_buffer += data;
-                });
-                start_res.on('end', function(){
+          mc_client.remote.set(yeti.yeti_id, payload, function(err, set_res){
+            if(err){
+              handle_error(res, err);
+            } else {
+              mc_client.remote.start(yeti.yeti_id, function(err, start_res){
+                if(err){
+                  handle_error(res, err);
+                } else {
                   test.running = true;
                   test.save(function(){
                     res.redirect('/test/report/' + test._id);
                   });
-                });
+                }
               });
-              start.end();
-            });
+            }
           });
-          set.end(payload);
         },5000);
-      });
-    });
-    create.end();
-/*
-
-
-    }
-    var queue = http.request(
-      req_options, 
-      function(set_res){
-        set_res.on('end', function(){
-          console.log('ok it was set');
-          var start = http.request( { host: "127.0.0.1", port : 31337, method : 'POST', path : '/start', });
-          start.end();
-        });
       }
-    ); 
-    queue.write(payload);
-    queue.end();*/
+    });
   });
 
   app.get('/test/verify/:id', function(req,res){

@@ -1,6 +1,5 @@
 var http = require('http');
 var dnode = require('dnode');
-var express = require('express');
 var _ = require('underscore');
 var mongoose = require('mongoose');
 var model = require('./ui/model');
@@ -102,71 +101,78 @@ var cloud_server = dnode(function (client, conn){
 }).listen(cloud_server_port, '0.0.0.0');
 console.log('cloud server listening on ' + cloud_server_port);
 
-var mc = {
-  list: function(req, res){
-    res.send(JSON.stringify(Object.keys(yetis)));
-  },
-  
-  create: function(req,res){
-    cloud.client.create(function(err, yeti_id){
-      res.send(JSON.stringify({yeti_id:yeti_id}));
-    });
-  },
+var mc_dnode_port = parseInt(process.env.MC_HTTP_PORT) || 31337;
+var mc = dnode(function (client, conn){
+  conn.on('ready',function(){
+  });
 
-  destroy: function(req,res){
-    var yeti = yetis[req.params.id];  
-    if(!yeti){    
-      res.writeHead(500);
-      res.end('yeti does not exit');
+  conn.on('end', function(){
+  });
+
+  this.list = function(callback){
+    callback(Object.keys(yetis));
+  };
+  
+  this.create = function(callback){
+    console.log(cloud);
+    if(cloud.client == undefined){
+      callback('cloud does not exist');
+      return;
+    }
+    cloud.client.create(function(err, yeti_id){
+      callback(null, {yeti_id:yeti_id});
+    });
+  };
+
+  this.destroy = function(id, callback){
+    var yeti = yetis[id];  
+    if(!yeti){
+      callback('yeti does not exist');
       return;
     }
     cloud.client.destroy(yeti.id,function(err){
       if(err){
-        res.writeHead(500);
-        res.end(err.message);
+        callback(err.message, null);
       } else {
-        res.send('success');
+        callback(null, 'success');
       }
     });
-  },
-    
-  set: function(req, res){
-    var yeti = yetis[req.params.id];  
-    if(!yeti){    
-      res.writeHead(500);
-      res.end('yeti does not exit');
+  };
+
+  this.set = function(id, data, callback){
+    var yeti = yetis[id];  
+    if(!yeti){
+      callback('yeti does not exit');
       return;
     }
 
-    yeti.account_id = req.body.account_id;
-    yeti.test_id = req.body.test_id;
+    yeti.account_id = data.account_id;
+    yeti.test_id = data.test_id;
     yeti.data = {};
     yeti.max_responses = 0;
         
-    var target = req.body.target;
-    target.max_requests = req.body.max_requests;
-    target.concurrency = req.body.concurrency;
+    var target = data.target;
+    target.max_requests = data.max_requests;
+    target.concurrency = data.concurrency;
 
     var res_obj = {};    
-    yeti.client.set(JSON.stringify(target), function(err, status){
+    yeti.client.set(target, function(err, status){
       res_obj[yeti.id] = {
         status: status
       };
       yeti.status = status;
-      res.send(JSON.stringify(res_obj));
+      callback(null,res_obj);
     });
-  },
-  
-  start: function(req, res){
-    var yeti = yetis[req.params.id];
-    if(!yeti){    
-      res.writeHead(500);
-      res.end('yeti does not exit');
+  };
+
+  this.start = function(id, callback){
+    var yeti = yetis[id];
+    if(!yeti){
+      callback('yeti does not exist');
       return;
     }
     if( yeti.status !== "ready"){
-      res.writeHead(500);
-      res.end('yeti not ready');
+      callback('yeti not ready');
       return;
     }
     var res_obj = {};
@@ -175,15 +181,14 @@ var mc = {
         status: status
       };
       yeti.status = status;
-      res.send(JSON.stringify(res_obj));
+      callback(null, res_obj);
     });
-  },
-  
-  stop: function(req, res){
-    var yeti = yetis[req.params.id];
+  };
+
+  this.stop = function(id, callback){
+    var yeti = yetis[id];
     if(!yeti){    
-      res.writeHead(500);
-      res.end('yeti does not exit');
+      callback('yeti does not exit');
       return;
     }
     var res_obj = {};    
@@ -192,75 +197,32 @@ var mc = {
         status: status
       };
       yeti.status = status;
-      res.send(JSON.stringify(res_obj));
+      callback(null, JSON.stringify(res_obj));
     });
-  },
-  
-  status: function(req, res){
-    var yeti = yetis[req.params.id];
+  };
+
+  this.status = function(id, callback){
+    var yeti = yetis[id];
     if(!yeti){    
-      res.writeHead(500);
-      res.end('yeti does not exit');
+      callback('yeti does not exit');
       return;
     }
     var res_obj = {};
     yeti.client.status(function(err, status){
       res_obj[yeti.id] = status;
       yeti.status = status.status;
-      res.send(JSON.stringify(res_obj));
+      callback(null, res_obj);
     });
-  },
-  
-  report: function(req, res){
-    var yeti = yetis[req.params.id];
+  };
+
+  this.report = function(id, callback){
+    var yeti = yetis[id];
     if(!yeti){    
-      res.writeHead(500);
-      res.end('yeti does not exit');
+      callback('yeti does not exit');
       return;
-    }    
-    if(!yeti){
-      res.writeHead(200);
-      res.end();
     }
-    res.send(JSON.stringify({data: yeti.data, max_responses: yeti.max_responses}));
-  }
-}
+    callback(null, {data: yeti.data, max_responses: yeti.max_responses});
+  };
+}).listen(mc_dnode_port, '0.0.0.0');
 
-
-var app = express.createServer();
-app.use(express.bodyParser());
-
-app.get('/', function(req, res){
-  mc.list(req, res);
-});
-
-app.post('/create', function(req, res){
-  mc.create(req, res);
-});
-
-app.post('/destroy/:id', function(req, res){
-  mc.destroy(req, res);
-});
-
-app.post('/set/:id', function(req, res){
-  mc.set(req, res);
-});
-
-app.post('/start/:id', function(req, res){
-  mc.start(req, res);
-});
-
-app.post('/stop/:id', function(req, res){
-  mc.stop(req, res);
-});
-
-app.get('/status/:id', function(req, res){
-  mc.status(req, res);
-});
-
-app.get('/report/:id', function(req, res){
-  mc.report(req, res);
-});
-
-app.listen(parseInt(process.env.MC_HTTP_PORT) || 31337, '127.0.0.1');
-console.log('http listening on ' + app.address().port);
+console.log('mc dnode listening on ' + mc_dnode_port);
