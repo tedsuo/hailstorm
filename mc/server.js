@@ -114,7 +114,6 @@ var mc = dnode(function (client, conn){
   };
   
   this.create = function(callback){
-    console.log(cloud);
     if(cloud.client == undefined){
       callback('cloud does not exist');
       return;
