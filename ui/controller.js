@@ -301,12 +301,11 @@ exports.routes = function(app, mc_client){
     };
 
     console.log(payload);
-    mc_client.remote.create(function(err, create_res){
+    mc_client.remote.create(test._id, function(err, create_res){
       if(err){
         handle_error(res, err);
       } else {
-        var yeti = create_res;
-        test.yeti=yeti.yeti_id;
+        test.yeti=test._id;
         console.log(test);
         req.account.save(function(err){
           if(err) {
@@ -316,11 +315,11 @@ exports.routes = function(app, mc_client){
           }
         });
         setTimeout(function(){
-          mc_client.remote.set(yeti.yeti_id, payload, function(err, set_res){
+          mc_client.remote.set(test._id, payload, function(err, set_res){
             if(err){
               handle_error(res, err);
             } else {
-              mc_client.remote.start(yeti.yeti_id, function(err, start_res){
+              mc_client.remote.start(test._id, function(err, start_res){
                 if(err){
                   handle_error(res, err);
                 } else {
