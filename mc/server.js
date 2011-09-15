@@ -180,7 +180,7 @@ var mc = dnode(function (client, conn){
         cloud_sets[i] = function(callback){
           cloud.client.set(id, target_calculate(_.size(cloud_sets)), function(err, status){
             if(err){
-              callback(null, {result: 'error', message: err});
+              callback(err); // TODO: or retry...
             } else {
               cloud.tests[id].status = status;
               callback(null, {result: 'success'});
@@ -211,7 +211,7 @@ var mc = dnode(function (client, conn){
         cloud_starts[i] = function(callback){
           cloud.client.start(id, function(err, status){
             if(err){
-              callback(null, {result: 'error', err: err});
+              callback(err);
             } else {
               cloud.tests[id].status = status;
               callback(null, {result: 'success'});
