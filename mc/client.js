@@ -58,7 +58,7 @@ Client.prototype.create = function(id,callback){
   var client = this;
   this.queue(function(done){
     client.remote.create(id,function(){
-      callback();
+      callback(arguments);
       done();
     });
   });
@@ -69,7 +69,7 @@ Client.prototype.set = function(id,data,callback){
   var client = this;
   this.queue(function(done){
     client.remote.set(id,data,function(){
-      callback();
+      callback(arguments);
       done();
     });
   });
@@ -80,7 +80,7 @@ Client.prototype.start = function(id,callback){
   var client = this;
   this.queue(function(done){
     client.remote.start(id,function(){
-      callback();
+      callback(arguments);
       done();
     });
   });
@@ -91,7 +91,7 @@ Client.prototype.on_complete = function(id,callback){
   var client = this;
   this.queue(function(done){
     client.remote.on_complete(id,function(){
-      callback();
+      callback(arguments);
       done();
     });
   });
