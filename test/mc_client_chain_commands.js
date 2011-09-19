@@ -5,10 +5,10 @@ var mc = require('../mc/client');
 var util = require('util');
 var assert = require('assert');
 
-var TEST_ID = 123;
+var TEST_ID = 456;
 var MAX_REQUESTS = 20;
 var CONCURRENCY = 5;
-var TARGET_PORT = 8666;
+var TARGET_PORT = 8667;
 var TEST_DATA = {
   concurrency: CONCURRENCY,
   max_requests: MAX_REQUESTS,
@@ -34,27 +34,24 @@ console.log('punching bag listening on port '+TARGET_PORT);
 
 
 // create a test, run it, check that it sends the correct number of tests
-mc_client = mc.createClient();
+var mc_client = mc.createClient();
 
-mc_client.on('ready',function(){
-  console.log('ready');
-
-  mc_client.create(TEST_ID,function(err,data){
+mc_client
+  .create(TEST_ID,function(err,data){
     console.log('created');
     console.log(arguments);
-
-    mc_client.set(TEST_ID,TEST_DATA,function(err,data){
-      console.log('set');
-      console.log(arguments);
-
-      mc_client.start(TEST_ID,function(err,data){
-        console.log('started');
-        console.log(arguments);
-      });
-    });
+  })
+  .set(TEST_ID,TEST_DATA,function(err,data){
+    console.log('set');
+    console.log(arguments);
+  })
+  .start(TEST_ID,function(err,data){
+    console.log('started');
+    console.log(arguments);
   });
-});
 
+
+// assert successful completion
 mc_client.on('complete',function(){
   assert.equal( requests_received, MAX_REQUESTS);
   console.log('test complete');

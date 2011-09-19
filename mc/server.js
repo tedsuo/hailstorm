@@ -61,6 +61,8 @@ var cloud_server = dnode(function (client, conn){
   
   // must be pluralized
   this.finished = function(id){
+    mc_clients[id].emit('complete');
+/*
     model.Account.findById(cloud.tests[id].account_id, function(err, account) {
       if(err){
         console.log(err);
@@ -83,11 +85,12 @@ var cloud_server = dnode(function (client, conn){
         });        
       });
     });    
+*/  
   };
-  
 }).listen(cloud_server_port, '0.0.0.0');
 console.log('cloud server listening on ' + cloud_server_port);
 
+var mc_clients = {};
 var mc_dnode_port = parseInt(process.env.MC_HTTP_PORT) || 31337;
 var mc = dnode(function (client, conn){
   conn.on('ready',function(){
@@ -101,6 +104,8 @@ var mc = dnode(function (client, conn){
   };
   
   this.create = function(id, callback){
+    mc_clients[id] = client;
+    
     if(clouds.length == 0){
       callback('no clouds available');
       return;
@@ -127,7 +132,7 @@ var mc = dnode(function (client, conn){
       if(err){
         callback(err);
       } else {
-        callback();
+        callback(null,results);
       }
     });
   };
@@ -172,13 +177,13 @@ var mc = dnode(function (client, conn){
     }
     var cloud_sets = {};
     _.each(clouds, function(cloud, i){
-      if(cloud.tests[id].status == 'created' && cloud.tests[id]){ 
+      if(cloud.tests[id] && (cloud.tests[id].status == 'created')){ 
         cloud.tests[id].account_id = data.account_id;
         cloud.tests[id].data = {};
         cloud.tests[id].max_responses = 0;
         
         cloud_sets[i] = function(callback){
-          cloud.client.set(id, target_calculate(_.size(cloud_sets)), function(err, status){
+          cloud.client.set(id, data.target, function(err, status){
             if(err){
               callback(err); // TODO: or retry...
             } else {
@@ -194,7 +199,9 @@ var mc = dnode(function (client, conn){
       callback('no clouds with status "created" with test id '+id);
       return;
     }
-
+    var num = _.size(cloud_sets);
+    data.target.max_requests = Math.floor(data.max_requests / num);
+    data.target.concurrency = Math.floor(data.concurrency / num);
     async.parallel(cloud_sets, function(err, results){
       if(err){
         callback(err);
