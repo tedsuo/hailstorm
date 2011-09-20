@@ -1,7 +1,5 @@
 var express = require('express');
-var mongoose = require('mongoose');
 var controller = require('./controller');
-var model = require('../model');
 var session = require('./session');
 var mc = require('../mc/client');
 

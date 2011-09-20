@@ -1,7 +1,6 @@
 var http = require('http');
 var dnode = require('dnode');
 var _ = require('underscore');
-var mongoose = require('mongoose');
 var model = require('../model');
 var async = require('async');
 
@@ -20,23 +19,56 @@ var cloud_server = dnode(function (client, conn){
     delete cloud;
   });
 
+  // when we receive a chunked report, save it to the db
   this.report = function(id, result){
-    var current_count = 0;
-    var rounded_response = Math.round(result.response_time / 100);
-    var rounded_start_time = Math.ceil(result.start_time / 5000);
-    if(cloud.tests[id].data[result.status_code] == undefined){
-      cloud.tests[id].data[result.status_code] = {};
-    }
-    if(cloud.tests[id].data[result.status_code][rounded_start_time] == undefined){
-      cloud.tests[id].data[result.status_code][rounded_start_time] = {};
-    }
-    if(cloud.tests[id].data[result.status_code][rounded_start_time][rounded_response] == undefined){
-      cloud.tests[id].data[result.status_code][rounded_start_time][rounded_response] = 0;
-    }
-    current_count = cloud.tests[id].data[result.status_code][rounded_start_time][rounded_response]++;
-    if(cloud.tests[id].max_responses < current_count){
-      cloud.tests[id].max_responses = current_count;
-    }
+    model.Account.findById(cloud.tests[id].account_id, function(err, account){
+      if(err){
+        console.log(err);
+        return
+      }
+      console.log("Report Received:"+JSON.stringify(result));
+      var test = account.tests.id(id);
+      var report = test.reports[test.reports.length - 1];
+      _.each(result, function(status_code_obj, status_code){
+        var report_status = report.get(status_code);
+        if(report_status == undefined){
+          report.set(status_code, status_code_obj);
+        } else {
+          _.each(status_code_obj, function(method_obj, method){
+            if(report_status[method] == undefined){
+              report_status[method] = method_obj;
+            } else {
+              _.each(method_obj, function(path_obj, path){
+                if(report_status[method][path] == undefined){
+                  report_status[method][path] = path_obj;
+                } else {
+                  _.each(path_obj, function(rounded_end_time_obj, rounded_end_time){
+                    if(report_status[method][path][rounded_end_time] == undefined){
+                      report_status[method][path][rounded_end_time] = rounded_end_time_obj;
+                    } else {
+                      _.each(rounded_end_time_obj, function(rounded_start_time_obj, rounded_start_time){
+                        if(report_status[method][path][rounded_end_time][rounded_start_time] == undefined){
+                          report_status[method][path][rounded_end_time][rounded_start_time] = rounded_start_time_obj;
+                        } else {
+                          report_status[method][path][rounded_end_time][rounded_start_time].count += rounded_start_time_obj.count;
+                        }
+                      });
+                    }
+                  });
+                }
+              }); 
+            }
+          });
+          report.set(status_code, report_status);
+        }
+      });
+      account.save(function(err){
+        if(err){
+          console.log(err);
+          return;
+        }
+      });
+    });
   }
   
   // this has to be pluralized
@@ -47,7 +79,7 @@ var cloud_server = dnode(function (client, conn){
         console.log(err);
         return;
       }
-      var test = account.tests.id(cloud.tests[id].test_id);
+      var test = account.tests.id(id);
       if(status == 'attacking'){
         test.running = true;
         test.save(function(err){
@@ -206,7 +238,22 @@ var mc = dnode(function (client, conn){
       if(err){
         callback(err);
       } else {
-        callback(null, results);
+        // do we want to create a new report record on every set?
+        model.Account.findById(data.account_id, function(err, account){
+          if(err){
+            callback(err);
+            return;
+          }
+          test = account.tests.id(id);
+          test.reports.push({});
+          account.save(function(err){
+            if(err){
+              callback(err);
+              return;
+            }
+            callback(null, results);
+          });
+        });
       }
     });
   };

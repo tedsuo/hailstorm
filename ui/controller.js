@@ -205,7 +205,7 @@ exports.routes = function(app, mc_client){
       protocol : req.body.protocol,
       verified : false,
       requests : JSON.stringify(requests),
-      results : '',
+      reports : [],
       running : false,
       yeti : ''
     };

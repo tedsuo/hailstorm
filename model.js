@@ -7,13 +7,16 @@ function hash(password) {
   return crypto.createHash('sha1').update(password).digest('hex');
 }
 
+var Report = new Schema({
+});
+
 var Test = new Schema({
     host      : String
   , port      : Number
   , protocol  : String
   , verified  : Boolean
   , requests  : String
-  , results   : String
+  , reports   : [Report]
   , running   : Boolean
   , yeti      : String
 });
