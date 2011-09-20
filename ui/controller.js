@@ -242,7 +242,7 @@ exports.routes = function(app, mc_client){
 
     async.parallel({
       report: function(callback){
-        mc_client.remote.report(yeti_id, function(err, report_res){
+        mc_client.report(yeti_id, function(err, report_res){
           if(err){
             callback(err);
           } else {
@@ -251,7 +251,7 @@ exports.routes = function(app, mc_client){
         });
       },
       status: function(callback){
-        mc_client.remote.status(yeti_id, function(err, status_res){
+        mc_client.status(yeti_id, function(err, status_res){
           if(err){
             callback(err);
           } else {
@@ -301,7 +301,8 @@ exports.routes = function(app, mc_client){
     };
 
     console.log(payload);
-    mc_client.remote.create(test._id, function(err, create_res){
+    mc_client.create(test._id, function(err, create_res){
+      console.log(err);
       if(err){
         handle_error(res, err);
       } else {
@@ -314,24 +315,22 @@ exports.routes = function(app, mc_client){
             console.log('Saved yeti');
           }
         });
-        setTimeout(function(){
-          mc_client.remote.set(test._id, payload, function(err, set_res){
-            if(err){
-              handle_error(res, err);
-            } else {
-              mc_client.remote.start(test._id, function(err, start_res){
-                if(err){
-                  handle_error(res, err);
-                } else {
-                  test.running = true;
-                  test.save(function(){
-                    res.redirect('/test/report/' + test._id);
-                  });
-                }
-              });
-            }
-          });
-        },5000);
+				mc_client.set(test._id, payload, function(err, set_res){
+					if(err){
+						handle_error(res, err);
+					} else {
+						mc_client.start(test._id, function(err, start_res){
+							if(err){
+								handle_error(res, err);
+							} else {
+								test.running = true;
+								test.save(function(){
+									res.redirect('/test/report/' + test._id);
+								});
+							}
+						});
+					}
+				});
       }
     });
   });

@@ -54,44 +54,28 @@ var Client = function(){
 
 util.inherits(Client, EventEmitter);
 
-Client.prototype.create = function(id,callback){
-  var client = this;
-  this.queue(function(done){
-    client.remote.create(id,function(){
-      callback(arguments);
-      done();
+var api_calls = ['create','start','report','status','on_complete'];
+var add_prototype = function(call_name){
+  Client.prototype[call_name] = function(id,callback){
+    var client = this;
+    this.queue(function(done){
+      client.remote[call_name](id,function(){
+        callback.apply(this, arguments);
+        done();
+      });
     });
-  });
-  return this;
+    return this;
+  }
+}
+for(i in api_calls){
+  add_prototype(api_calls[i]);
 }
 
 Client.prototype.set = function(id,data,callback){
   var client = this;
   this.queue(function(done){
     client.remote.set(id,data,function(){
-      callback(arguments);
-      done();
-    });
-  });
-  return this;
-}
-
-Client.prototype.start = function(id,callback){
-  var client = this;
-  this.queue(function(done){
-    client.remote.start(id,function(){
-      callback(arguments);
-      done();
-    });
-  });
-  return this;
-}
-
-Client.prototype.on_complete = function(id,callback){
-  var client = this;
-  this.queue(function(done){
-    client.remote.on_complete(id,function(){
-      callback(arguments);
+      callback.apply(this, arguments);
       done();
     });
   });
