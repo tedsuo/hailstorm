@@ -54,8 +54,16 @@ var Client = function(){
 
 util.inherits(Client, EventEmitter);
 
-var api_calls = ['create','start','status','on_complete'];
-var add_prototype = function(call_name){
+// available remote methods
+var api_calls = [
+  'create',
+  'start',
+  'status',
+  'on_complete'
+];
+
+// buffer api requests when client is disconnected
+var add_buffered_api_call = function(call_name){
   Client.prototype[call_name] = function(id,callback){
     var client = this;
     this.queue(function(done){
@@ -67,8 +75,10 @@ var add_prototype = function(call_name){
     return this;
   }
 }
+
+// add buffered remote methods to Client.prototype
 for(i in api_calls){
-  add_prototype(api_calls[i]);
+  add_buffered_api_call(api_calls[i]);
 }
 
 Client.prototype.set = function(id,data,callback){
@@ -82,6 +92,7 @@ Client.prototype.set = function(id,data,callback){
   return this;
 }
 
+// queue if disconnceted, fire if connected
 Client.prototype.queue = function(callback){
   switch(this.state){
     case 'connected':
@@ -92,6 +103,7 @@ Client.prototype.queue = function(callback){
   };
 }
 
+// fire all requests in the queue
 Client.prototype.drain = function(){
   var client = this;
   async.series(this._queue,function(){
