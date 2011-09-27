@@ -4,24 +4,24 @@ var _ = require('underscore');
 var model = require('../model');
 var async = require('async');
 
-var clouds = {};
+var yetis = {};
 
-var cloud_server_port = parseInt(process.env.CLOUD_DNODE_PORT) || 1338;
-var cloud_server = dnode(function (client, conn){
-  console.log('cloud arrived: '+conn.id);  
-  var cloud = {client: client, conn: conn, tests: {}};
+var yeti_server_port = parseInt(process.env.CLOUD_DNODE_PORT) || 1338;
+var yeti_server = dnode(function (client, conn){
+  console.log('yeti arrived: '+conn.id);  
+  var yeti = {client: client, conn: conn, tests: {}};
   conn.on('ready', function(){
-    clouds[conn.id] = cloud;
+    yetis[conn.id] = yeti;
   });
   conn.on('end', function(){
-    console.log('cloud left: '+conn.id);  
-    delete clouds[conn.id];
-    delete cloud;
+    console.log('yeti left: '+conn.id);  
+    delete yetis[conn.id];
+    delete yeti;
   });
 
   // when we receive a chunked report, save it to the db
   this.report = function(id, result){
-    model.Account.findById(cloud.tests[id].account_id, function(err, account){
+    model.Account.findById(yeti.tests[id].account_id, function(err, account){
       if(err){
         console.log(err);
         return
@@ -60,8 +60,8 @@ var cloud_server = dnode(function (client, conn){
   
   // this has to be pluralized
   this.updateTestStatus = function(id, status){
-    cloud.tests[id].status = status;
-    model.Account.findById(cloud.tests[id].account_id, function(err, account) {
+    yeti.tests[id].status = status;
+    model.Account.findById(yeti.tests[id].account_id, function(err, account) {
       if(err){
         console.log(err);
         return;
@@ -82,20 +82,20 @@ var cloud_server = dnode(function (client, conn){
   this.finished = function(id){
     mc_clients[id].emit('complete');
 /*
-    model.Account.findById(cloud.tests[id].account_id, function(err, account) {
+    model.Account.findById(yeti.tests[id].account_id, function(err, account) {
       if(err){
         console.log(err);
         return;
       }
-      console.log('Cloud '+conn.id+' finished test '+id+' for account '+cloud.tests[id].account_id);
+      console.log('Cloud '+conn.id+' finished test '+id+' for account '+yeti.tests[id].account_id);
       var test = account.tests.id(id);
-      test.results = JSON.stringify({data: cloud.tests[id].data, max_responses: cloud.tests[id].max_responses});
+      test.results = JSON.stringify({data: yeti.tests[id].data, max_responses: yeti.tests[id].max_responses});
       test.running = false;
       test.save(function(err){
         if(err){
           console.log(err);
         }
-        cloud.client.destroy(id,function(err){
+        yeti.client.destroy(id,function(err){
           if(err){
             console.log('couldn\'t kill test '+id);
           } else {
@@ -106,8 +106,8 @@ var cloud_server = dnode(function (client, conn){
     });    
 */  
   };
-}).listen(cloud_server_port, '0.0.0.0');
-console.log('cloud server listening on ' + cloud_server_port);
+}).listen(yeti_server_port, '0.0.0.0');
+console.log('yeti server listening on ' + yeti_server_port);
 
 var mc_clients = {};
 var mc_dnode_port = parseInt(process.env.MC_HTTP_PORT) || 31337;
@@ -119,35 +119,35 @@ var mc = dnode(function (client, conn){
   });
 
   this.list = function(callback){
-    callback(Object.keys(clouds));
+    callback(Object.keys(yetis));
   };
   
   this.create = function(id, callback){
     mc_clients[id] = client;
     
-    if(clouds.length == 0){
-      callback('no clouds available');
+    if(yetis.length == 0){
+      callback('no yetis available');
       return;
     }
     
-    var cloud_creates = {};
-    _.each(clouds, function(cloud, i){
-      cloud_creates[i] = function(callback){
-        cloud.client.create(id, function(err){
+    var yeti_creates = {};
+    _.each(yetis, function(yeti, i){
+      yeti_creates[i] = function(callback){
+        yeti.client.create(id, function(err){
           if(err){
             callback(null,{result: 'error', message: err});
           } else {
-            if(cloud.tests[id] == undefined){
-              cloud.tests[id] = {};
+            if(yeti.tests[id] == undefined){
+              yeti.tests[id] = {};
             }
-            cloud.tests[id].status = 'created';
+            yeti.tests[id].status = 'created';
             callback(null, {result: 'success'});
           }
         });
       };
     });
 
-    async.parallel(cloud_creates, function(err, results){
+    async.parallel(yeti_creates, function(err, results){
       if(err){
         callback(err);
       } else {
@@ -157,12 +157,12 @@ var mc = dnode(function (client, conn){
   };
 
   this.destroy = function(id, callback){
-    var cloud_destroys = {};
-    _.each(clouds, function(cloud, i){
-      if(cloud.tests[id]){
-        cloud_destroys[i] = function(callback){
-          cloud.client.destroy(id,function(err){
-            delete cloud.tests[id];
+    var yeti_destroys = {};
+    _.each(yetis, function(yeti, i){
+      if(yeti.tests[id]){
+        yeti_destroys[i] = function(callback){
+          yeti.client.destroy(id,function(err){
+            delete yeti.tests[id];
             if(err){
               callback(null, {result: 'error', err: err.message});
             } else {
@@ -173,12 +173,12 @@ var mc = dnode(function (client, conn){
       };
     });
 
-    if(_.size(cloud_destroys) == 0){
-      callback('no clouds with test id'+id);
+    if(_.size(yeti_destroys) == 0){
+      callback('no yetis with test id'+id);
       return;
     }
 
-    async.parallel(cloud_destroys, function(err, results){
+    async.parallel(yeti_destroys, function(err, results){
       if(err){
         callback(err);
       } else {
@@ -194,18 +194,18 @@ var mc = dnode(function (client, conn){
       target.concurrency = Math.floor(data.concurrency / num);
       return target;
     }
-    var cloud_sets = {};
-    _.each(clouds, function(cloud, i){
-      if(cloud.tests[id] && (cloud.tests[id].status == 'created')){ 
-        cloud.tests[id].account_id = data.account_id;
-        cloud.tests[id].max_responses = 0;
-        
-        cloud_sets[i] = function(callback){
-          cloud.client.set(id, data.target, function(err, status){
+
+    var yeti_sets = {};
+    _.each(yetis, function(yeti, i){
+      if(yeti.tests[id] && (yeti.tests[id].status == 'created')){ 
+        yeti.tests[id].account_id = data.account_id;
+        yeti.tests[id].max_responses = 0;
+        yeti_sets[i] = function(callback){
+          yeti.client.set(id, data.target, function(err, status){
             if(err){
               callback(err); // TODO: or retry...
             } else {
-              cloud.tests[id].status = status;
+              yeti.tests[id].status = status;
               callback(null, {result: 'success'});
             }
           });
@@ -213,14 +213,14 @@ var mc = dnode(function (client, conn){
       }
     });
 
-    if(_.size(cloud_sets) == 0){
-      callback('no clouds with status "created" with test id '+id);
+    if(_.size(yeti_sets) == 0){
+      callback('no yetis with status "created" with test id '+id);
       return;
     }
-    var num = _.size(cloud_sets);
+    var num = _.size(yeti_sets);
     data.target.max_requests = Math.floor(data.max_requests / num);
     data.target.concurrency = Math.floor(data.concurrency / num);
-    async.parallel(cloud_sets, function(err, results){
+    async.parallel(yeti_sets, function(err, results){
       if(err){
         callback(err);
       } else {
@@ -247,27 +247,27 @@ var mc = dnode(function (client, conn){
   };
 
   this.start = function(id, callback){
-    var cloud_starts = {};
-    _.each(clouds, function(cloud, i){
-      if(cloud.tests[id].status == "ready" && cloud.tests[id]){
-        cloud_starts[i] = function(callback){
-          cloud.client.start(id, function(err, status){
+    var yeti_starts = {};
+    _.each(yetis, function(yeti, i){
+      if(yeti.tests[id].status == "ready" && yeti.tests[id]){
+        yeti_starts[i] = function(callback){
+          yeti.client.start(id, function(err, status){
             if(err){
               callback(err);
             } else {
-              cloud.tests[id].status = status;
+              yeti.tests[id].status = status;
               callback(null, {result: 'success'});
             }
           });
         }
       }
     });
-    if(_.size(cloud_starts) == 0){
-      callback('no clouds with status "ready" with test id '+id);
+    if(_.size(yeti_starts) == 0){
+      callback('no yetis with status "ready" with test id '+id);
       return;
     }
     
-    async.parallel(cloud_starts, function(err, results){
+    async.parallel(yeti_starts, function(err, results){
       if(err){
         callback(err);
       } else {
@@ -277,27 +277,27 @@ var mc = dnode(function (client, conn){
   };
 
   this.stop = function(id, callback){
-    var cloud_stops = {};
-    _.each(clouds, function(cloud, i){
-      if(cloud.tests[id].status == "attacking" && cloud.tests[id]){
-        cloud_stops[i] = function(callback){
-          cloud.client.stop(id, function(err, status){
+    var yeti_stops = {};
+    _.each(yetis, function(yeti, i){
+      if(yeti.tests[id].status == "attacking" && yeti.tests[id]){
+        yeti_stops[i] = function(callback){
+          yeti.client.stop(id, function(err, status){
             if(err){
               callback(null, {result: 'error', err: err});
             } else {
-              cloud.tests[id].status = status;
+              yeti.tests[id].status = status;
               callback(null, {result: 'success'});
             }
           });
         }
       }
     });
-    if(_.size(cloud_stops) == 0){
-      callback('no clouds with status "attacking" with test id '+id);
+    if(_.size(yeti_stops) == 0){
+      callback('no yetis with status "attacking" with test id '+id);
       return;
     }
     
-    async.parallel(cloud_stops, function(err, results){
+    async.parallel(yeti_stops, function(err, results){
       if(err){
         callback(err);
       } else {
@@ -307,27 +307,27 @@ var mc = dnode(function (client, conn){
   };
 
   this.status = function(id, callback){
-    var cloud_statuses = {};
-    _.each(clouds, function(cloud, i){
-      if(cloud.tests[id]){
-        cloud_statuses[i] = function(callback){
-          cloud.client.status(id, function(err, status){
+    var yeti_statuses = {};
+    _.each(yetis, function(yeti, i){
+      if(yeti.tests[id]){
+        yeti_statuses[i] = function(callback){
+          yeti.client.status(id, function(err, status){
             if(err){
               callback(null, {result: 'error', err: err});
             } else {
-              cloud.tests[id].status = status;
+              yeti.tests[id].status = status;
               callback(null, {status: status});
             }
           });
         }
       }
     });
-    if(_.size(cloud_statuses) == 0){
-      callback('no clouds with test id '+id);
+    if(_.size(yeti_statuses) == 0){
+      callback('no yetis with test id '+id);
       return;
     }
     
-    async.parallel(cloud_statuses, function(err, results){
+    async.parallel(yeti_statuses, function(err, results){
       if(err){
         callback(err);
       } else {
