@@ -8,25 +8,39 @@ function hash(password) {
 }
 
 var Report = new Schema({
+  test_run_id : String,
+  status_code : Number,
+  method      : String,
+  path        : String,
+  end_time    : Number,
+  start_time  : Number,
+  count       : Number
 });
 
+Report.virtual('response_time').get(function(){
+  return this.end_time - this.start_time;
+});
+
+var TestRun = new Schema({});
+
 var Test = new Schema({
-    host      : String
-  , port      : Number
-  , protocol  : String
-  , verified  : Boolean
-  , requests  : String
-  , reports   : [Report]
-  , running   : Boolean
-  , yeti      : String
+  host      : String,
+  port      : Number,
+  protocol  : String,
+  verified  : Boolean,
+  requests  : String,
+  test_runs : [TestRun],
+  running   : Boolean,
+  yeti      : String
 });
 
 var Account = new Schema({
-    username  : String
-  , password  : { type:String, set:hash }
-  , tests     : [Test]
+  username : String,
+  password : { type:String, set:hash },
+  tests    : [Test]
 });
-Account.statics.find_by_username_and_password = function(username, password, cb) {
+
+Account.statics.find_by_username_and_password = function(username, password, cb){
   this.find({ username:username, password:hash(password) }, function(err,docs){
     if(err) { 
       cb(err);
@@ -41,7 +55,9 @@ Account.statics.find_by_username_and_password = function(username, password, cb)
 };
 
 exports.Test = mongoose.model('Test', Test);
+exports.TestRun = mongoose.model('TestRun', TestRun);
 exports.Account = mongoose.model('Account', Account);
+exports.Report = mongoose.model('Report', Report);
 
 exports.create_account = function(username, password, cb) {
   var account = new exports.Account({ username:username, password:password });
@@ -63,4 +79,3 @@ exports.does_username_exist = function(username, cb) {
     }
   });
 };
-

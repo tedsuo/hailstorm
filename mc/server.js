@@ -28,45 +28,32 @@ var cloud_server = dnode(function (client, conn){
       }
       console.log("Report Received:"+JSON.stringify(result));
       var test = account.tests.id(id);
-      var report = test.reports[test.reports.length - 1];
+      var test_run_id = test.test_runs[test.test_runs.length - 1]._id;
       _.each(result, function(status_code_obj, status_code){
-        var report_status = report.get(status_code);
-        if(report_status == undefined){
-          report.set(status_code, status_code_obj);
-        } else {
-          _.each(status_code_obj, function(method_obj, method){
-            if(report_status[method] == undefined){
-              report_status[method] = method_obj;
-            } else {
-              _.each(method_obj, function(path_obj, path){
-                if(report_status[method][path] == undefined){
-                  report_status[method][path] = path_obj;
-                } else {
-                  _.each(path_obj, function(rounded_end_time_obj, rounded_end_time){
-                    if(report_status[method][path][rounded_end_time] == undefined){
-                      report_status[method][path][rounded_end_time] = rounded_end_time_obj;
-                    } else {
-                      _.each(rounded_end_time_obj, function(rounded_start_time_obj, rounded_start_time){
-                        if(report_status[method][path][rounded_end_time][rounded_start_time] == undefined){
-                          report_status[method][path][rounded_end_time][rounded_start_time] = rounded_start_time_obj;
-                        } else {
-                          report_status[method][path][rounded_end_time][rounded_start_time].count += rounded_start_time_obj.count;
-                        }
-                      });
-                    }
-                  });
-                }
-              }); 
-            }
-          });
-          report.set(status_code, report_status);
-        }
-      });
-      account.save(function(err){
-        if(err){
-          console.log(err);
-          return;
-        }
+        _.each(status_code_obj, function(method_obj, method){
+          _.each(method_obj, function(path_obj, path){
+            _.each(path_obj, function(end_time_obj, end_time){
+              _.each(end_time_obj, function(start_time_obj, start_time){
+                model.Report.update({
+                  test_run_id : test_run_id,
+                  status_code : status_code,
+                  method      : method,
+                  path        : path,
+                  end_time    : end_time,
+                  start_time  : start_time,
+                }, {
+                  $inc: {count: start_time_obj.count}
+                }, {
+                  upsert: true
+                }, function(err){
+                  if(err){
+                    console.log(err);
+                  }
+                });
+              });
+            });
+          }); 
+        });
       });
     });
   }
@@ -211,7 +198,6 @@ var mc = dnode(function (client, conn){
     _.each(clouds, function(cloud, i){
       if(cloud.tests[id] && (cloud.tests[id].status == 'created')){ 
         cloud.tests[id].account_id = data.account_id;
-        cloud.tests[id].data = {};
         cloud.tests[id].max_responses = 0;
         
         cloud_sets[i] = function(callback){
@@ -238,20 +224,22 @@ var mc = dnode(function (client, conn){
       if(err){
         callback(err);
       } else {
-        // do we want to create a new report record on every set?
+        // do we want to create a new test_run record on every set?
         model.Account.findById(data.account_id, function(err, account){
           if(err){
             callback(err);
             return;
           }
           test = account.tests.id(id);
-          test.reports.push({});
+          test_run = new model.TestRun({});
+          console.log('Created TestRun with id: '+test_run._id);
+          test.test_runs.push(test_run);
           account.save(function(err){
             if(err){
               callback(err);
               return;
             }
-            callback(null, results);
+            callback(null, results, test_run.id);
           });
         });
       }
@@ -348,42 +336,6 @@ var mc = dnode(function (client, conn){
     });
   };
 
-  this.report = function(id, callback){
-    var data_agg = {};
-    var max_responses_total = 0;
-    var num_tests = 0;
-    _.each(clouds, function(cloud, i){
-      if(cloud.tests[id]){
-        num_tests++;
-        _.each(cloud.tests[id].data, function(status_code_obj, status_code){
-          if(data_agg[status_code] == undefined){
-            data_agg[status_code] = {};
-          }
-          _.each(status_code_obj, function(st_obj, st){
-            if(data_agg[status_code][st] == undefined){
-              data_agg[status_code][st] = {};
-            }
-            _.each(st_obj, function(resp_val, resp){
-              if(data_agg[status_code][st][resp] == undefined){
-                data_agg[status_code][st][resp] = 0;
-              }
-              data_agg[status_code][st][resp] += resp_val;
-              if(data_agg[status_code][st][resp] > max_responses_total){
-                max_responses_total = data_agg[status_code][st][resp];
-              }
-            });
-          });
-        });        
-      }
-    });
-   
-    if(num_tests == 0){
-      callback('no clouds with test id '+id);
-      return;
-    }
-    
-    callback(null, {data: data_agg, max_responses: max_responses_total});
-  };
 }).listen(mc_dnode_port, '0.0.0.0');
 
 console.log('mc dnode listening on ' + mc_dnode_port);

@@ -205,7 +205,7 @@ exports.routes = function(app, mc_client){
       protocol : req.body.protocol,
       verified : false,
       requests : JSON.stringify(requests),
-      reports : [],
+      test_runs : [],
       running : false,
       yeti : ''
     };
@@ -230,10 +230,10 @@ exports.routes = function(app, mc_client){
     res.render('test_run',_.extend(logged_in(req),{test : test})); 
   });
 
-  app.get('/test/data/:id',function(req, res){
+  app.get('/test/data/:test_id/:test_run_id',function(req, res){
     if(!force_authentication(req, res)) return;
-    var test = req.account.tests.id(req.params.id);
-    if(!test.verified){
+    var test = req.account.tests.id(req.params.test_id);
+    if(!test.verified || !test.test_runs.id(req.params.test_run_id)){
       res.send('permission denied');
       return;
     }
@@ -242,11 +242,31 @@ exports.routes = function(app, mc_client){
 
     async.parallel({
       report: function(callback){
-        mc_client.report(yeti_id, function(err, report_res){
+        model.Report.find({
+          test_run_id: req.params.test_run_id
+        }, function(err, docs){
           if(err){
             callback(err);
           } else {
-            callback(null, report_res);
+            var data_agg = {};
+            var max_responses_total = 0;
+            _.each(docs, function(doc){
+              if(data_agg[doc.status_code] == undefined){
+                data_agg[doc.status_code] = {};
+              }
+              if(data_agg[doc.status_code][doc.start_time] == undefined){
+                data_agg[doc.status_code][doc.start_time] = {};
+              }
+              if(data_agg[doc.status_code][doc.start_time][doc.response_time] == undefined){
+                data_agg[doc.status_code][doc.start_time][doc.response_time] = doc.count;
+              } else {
+                data_agg[doc.status_code][doc.start_time][doc.response_time] += doc.count;
+              }
+              if(data_agg[doc.status_code][doc.start_time][doc.response_time] > max_responses_total){
+                max_responses_total = data_agg[doc.status_code][doc.start_time][doc.response_time];
+              }
+            });
+            callback(null, {data: data_agg, max_responses: max_responses_total});
           }
         });
       },
@@ -268,9 +288,9 @@ exports.routes = function(app, mc_client){
     });
   });
 
-  app.get('/test/report/:id', function(req, res){
+  app.get('/test/report/:test_id/:test_run_id', function(req, res){
     if(!force_authentication(req, res)) return;
-    res.render('test_report',_.extend(logged_in(req),{id: req.params.id})); 
+    res.render('test_report',_.extend(logged_in(req),{test_id: req.params.test_id, test_run_id: req.params.test_run_id})); 
   });
 
   app.post('/test/run', function(req, res){
@@ -315,7 +335,7 @@ exports.routes = function(app, mc_client){
             console.log('Saved yeti');
           }
         });
-				mc_client.set(test._id, payload, function(err, set_res){
+				mc_client.set(test._id, payload, function(err, set_res, test_run_id){
 					if(err){
 						handle_error(res, err);
 					} else {
@@ -325,7 +345,7 @@ exports.routes = function(app, mc_client){
 							} else {
 								test.running = true;
 								test.save(function(){
-									res.redirect('/test/report/' + test._id);
+									res.redirect('/test/report/' + test._id + '/' + test_run_id);
 								});
 							}
 						});

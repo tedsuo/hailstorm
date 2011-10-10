@@ -54,7 +54,7 @@ var Client = function(){
 
 util.inherits(Client, EventEmitter);
 
-var api_calls = ['create','start','report','status','on_complete'];
+var api_calls = ['create','start','status','on_complete'];
 var add_prototype = function(call_name){
   Client.prototype[call_name] = function(id,callback){
     var client = this;
