@@ -242,31 +242,13 @@ exports.routes = function(app, mc_client){
 
     async.parallel({
       report: function(callback){
-        model.Report.find({
-          test_run_id: req.params.test_run_id
-        }, function(err, docs){
+        mc_client.report(req.params.test_run_id, function(err, report_res){
+          // Necessary due to dnode bug to stringify objects
+          report_res = JSON.parse(report_res);
           if(err){
             callback(err);
           } else {
-            var data_agg = {};
-            var max_responses_total = 0;
-            _.each(docs, function(doc){
-              if(data_agg[doc.status_code] == undefined){
-                data_agg[doc.status_code] = {};
-              }
-              if(data_agg[doc.status_code][doc.start_time] == undefined){
-                data_agg[doc.status_code][doc.start_time] = {};
-              }
-              if(data_agg[doc.status_code][doc.start_time][doc.response_time] == undefined){
-                data_agg[doc.status_code][doc.start_time][doc.response_time] = doc.count;
-              } else {
-                data_agg[doc.status_code][doc.start_time][doc.response_time] += doc.count;
-              }
-              if(data_agg[doc.status_code][doc.start_time][doc.response_time] > max_responses_total){
-                max_responses_total = data_agg[doc.status_code][doc.start_time][doc.response_time];
-              }
-            });
-            callback(null, {data: data_agg, max_responses: max_responses_total});
+            callback(null, report_res);
           }
         });
       },
@@ -283,6 +265,7 @@ exports.routes = function(app, mc_client){
       if(err){
         handle_error(res, err);
       } else {
+        console.log("sending some results");
         res.send(results);
       }
     });
@@ -335,22 +318,22 @@ exports.routes = function(app, mc_client){
             console.log('Saved yeti');
           }
         });
-				mc_client.set(test._id, payload, function(err, set_res, test_run_id){
-					if(err){
-						handle_error(res, err);
-					} else {
-						mc_client.start(test._id, function(err, start_res){
-							if(err){
-								handle_error(res, err);
-							} else {
-								test.running = true;
-								test.save(function(){
-									res.redirect('/test/report/' + test._id + '/' + test_run_id);
-								});
-							}
-						});
-					}
-				});
+        mc_client.set(test._id, payload, function(err, set_res, test_run_id){
+          if(err){
+            handle_error(res, err);
+          } else {
+            mc_client.start(test._id, function(err, start_res){
+              if(err){
+                handle_error(res, err);
+              } else {
+                test.running = true;
+                test.save(function(){
+                  res.redirect('/test/report/' + test._id + '/' + test_run_id);
+                });
+              }
+            });
+          }
+        });
       }
     });
   });

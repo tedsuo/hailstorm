@@ -59,6 +59,7 @@ var api_calls = [
   'create',
   'start',
   'status',
+  'report',
   'on_complete'
 ];
 

@@ -336,6 +336,37 @@ var mc = dnode(function (client, conn){
     });
   };
 
+  this.report = function(id, callback){
+    console.log("this.report in server.js");
+    model.Report.find({
+      test_run_id: id
+    }, function(err, docs){
+      if(err){
+        callback(err);
+      } else {
+        var data_agg = {};
+        var max_responses_total = 0;
+        _.each(docs, function(doc){
+          if(data_agg[doc.status_code] == undefined){
+            data_agg[doc.status_code] = {};
+          }
+          if(data_agg[doc.status_code][doc.start_time] == undefined){
+            data_agg[doc.status_code][doc.start_time] = {};
+          }
+          if(data_agg[doc.status_code][doc.start_time][doc.response_time] == undefined){
+            data_agg[doc.status_code][doc.start_time][doc.response_time] = doc.count;
+          } else {
+            data_agg[doc.status_code][doc.start_time][doc.response_time] += doc.count;
+          }
+          if(data_agg[doc.status_code][doc.start_time][doc.response_time] > max_responses_total){
+            max_responses_total = data_agg[doc.status_code][doc.start_time][doc.response_time];
+          }
+        });
+        // Necessary due to dnode bug to stringify objects
+        callback(null, JSON.stringify({data: data_agg, max_responses: max_responses_total}));
+      }
+    });
+  };
 }).listen(mc_dnode_port, '0.0.0.0');
 
 console.log('mc dnode listening on ' + mc_dnode_port);

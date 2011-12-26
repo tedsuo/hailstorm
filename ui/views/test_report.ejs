@@ -1,5 +1,11 @@
 <script type='text/javascript'>
   $(document).ready(function(){
+    /*
+    DNode.connect(function(remote){
+      remote.report("123", function(resp){
+        alert(resp);
+      });
+    });*/
     setInterval(function(){
       $.ajax({
         url: '/test/data/{{= test_id}}/{{= test_run_id}}',
