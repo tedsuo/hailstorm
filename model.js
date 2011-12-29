@@ -14,7 +14,8 @@ var Report = new Schema({
   path        : String,
   end_time    : Number,
   start_time  : Number,
-  count       : Number
+  count       : Number,
+  last_update : Date
 });
 
 Report.virtual('response_time').get(function(){

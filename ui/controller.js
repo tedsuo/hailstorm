@@ -133,7 +133,7 @@ exports.routes = function(app, mc_client){
       else {
         req.session.account_id = account._id;
         res.redirect('/dashboard');
-        console.log('login successful! '+JSON.stringify(account));
+        console.log('login successful! username: '+account.username);
       }
 
     });
@@ -222,7 +222,6 @@ exports.routes = function(app, mc_client){
   app.get('/test/run/:id',function(req,res){
     if(!force_authentication(req, res)) return;
     var test = req.account.tests.id(req.params.id);
-    console.log(test);
     if(!test.verified) {
       res.render('dashboard');
       return;
@@ -273,7 +272,7 @@ exports.routes = function(app, mc_client){
 
   app.get('/test/report/:test_id/:test_run_id', function(req, res){
     if(!force_authentication(req, res)) return;
-    res.render('test_report',_.extend(logged_in(req),{test_id: req.params.test_id, test_run_id: req.params.test_run_id})); 
+    res.render('test_report',_.extend(logged_in(req),{test_id: req.params.test_id, test_run_id: req.params.test_run_id, session_id: req.sessionID})); 
   });
 
   app.post('/test/run', function(req, res){
@@ -310,7 +309,6 @@ exports.routes = function(app, mc_client){
         handle_error(res, err);
       } else {
         test.yeti=test._id;
-        console.log(test);
         req.account.save(function(err){
           if(err) {
             console.log(err.message) ;

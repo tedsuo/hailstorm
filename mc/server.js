@@ -42,7 +42,8 @@ var yeti_server = dnode(function (client, conn){
                   end_time    : end_time,
                   start_time  : start_time,
                 }, {
-                  $inc: {count: start_time_obj.count}
+                  $inc: {count: start_time_obj.count},
+                  last_update: new Date()
                 }, {
                   upsert: true
                 }, function(err){
@@ -336,11 +337,13 @@ var mc = dnode(function (client, conn){
     });
   };
 
-  this.report = function(id, callback){
-    console.log("this.report in server.js");
-    model.Report.find({
+  this.report = function(id, since, callback){
+    var options = {
       test_run_id: id
-    }, function(err, docs){
+    };
+    if(since != null) options.last_update = {$gt: new Date(since)};
+    var retreived_time = new Date();
+    model.Report.find(options, function(err, docs){
       if(err){
         callback(err);
       } else {
@@ -363,7 +366,7 @@ var mc = dnode(function (client, conn){
           }
         });
         // Necessary due to dnode bug to stringify objects
-        callback(null, JSON.stringify({data: data_agg, max_responses: max_responses_total}));
+        callback(null, JSON.stringify({data: data_agg, max_responses: max_responses_total, retreived_time: retreived_time}));
       }
     });
   };

@@ -1,21 +1,25 @@
 <script type='text/javascript'>
   $(document).ready(function(){
-    /*
     DNode.connect(function(remote){
-      remote.report("123", function(resp){
-        alert(resp);
-      });
-    });*/
-    setInterval(function(){
-      $.ajax({
-        url: '/test/data/{{= test_id}}/{{= test_run_id}}',
-        type: 'get',
-        dataType: 'json',
-        success: function(data){
-          chart_data(data.report);
+      remote.handshake('{{= session_id}}', function(err){
+        if(err){
+          console.log(err);
+          return;
         }
+        var since = null;
+        setInterval(function(){
+          remote.report('{{= test_id}}', '{{= test_run_id}}', since, function(err, data){
+            if(err){
+              console.log(err);
+            } else {
+              update_data(data.report);
+              chart_data();
+              since = new Date(data.report.retreived_time);
+            } 
+          });
+        }, 5000);
       });
-    },5000);
+    });
   });
 </script>
 <div id='container'>

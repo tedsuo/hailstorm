@@ -55,23 +55,28 @@ var Client = function(){
 util.inherits(Client, EventEmitter);
 
 // available remote methods
+// works for all calls being passed along where the callback is the last argument
 var api_calls = [
   'create',
   'start',
   'status',
   'report',
+  'set',
   'on_complete'
 ];
 
 // buffer api requests when client is disconnected
 var add_buffered_api_call = function(call_name){
-  Client.prototype[call_name] = function(id,callback){
+  Client.prototype[call_name] = function(){
     var client = this;
+    var callback = [].pop.call(arguments);
+    var args = arguments;
     this.queue(function(done){
-      client.remote[call_name](id,function(){
+      [].push.call(args, function(){
         callback.apply(this, arguments);
         done();
       });
+      client.remote[call_name].apply(this, args);
     });
     return this;
   }
@@ -80,17 +85,6 @@ var add_buffered_api_call = function(call_name){
 // add buffered remote methods to Client.prototype
 for(i in api_calls){
   add_buffered_api_call(api_calls[i]);
-}
-
-Client.prototype.set = function(id,data,callback){
-  var client = this;
-  this.queue(function(done){
-    client.remote.set(id,data,function(){
-      callback.apply(this, arguments);
-      done();
-    });
-  });
-  return this;
 }
 
 // queue if disconnceted, fire if connected
