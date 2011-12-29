@@ -7,14 +7,23 @@
           return;
         }
         var since = null;
-        setInterval(function(){
+        var report_check = setInterval(function(){
           remote.report('{{= test_id}}', '{{= test_run_id}}', since, function(err, data){
             if(err){
               console.log(err);
             } else {
+              console.log(data);
               update_data(data.report);
               chart_data();
-              since = new Date(data.report.retreived_time);
+              var continue_check = false;
+              $.each(data.status, function(i, yeti){
+                if(yeti.status.status == "attacking") continue_check = true;
+              });
+              if(!continue_check){
+                clearInterval(report_check);
+              } else {
+                since = new Date(data.report.retreived_time);
+              }
             } 
           });
         }, 5000);

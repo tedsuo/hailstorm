@@ -229,47 +229,6 @@ exports.routes = function(app, mc_client){
     res.render('test_run',_.extend(logged_in(req),{test : test})); 
   });
 
-  app.get('/test/data/:test_id/:test_run_id',function(req, res){
-    if(!force_authentication(req, res)) return;
-    var test = req.account.tests.id(req.params.test_id);
-    if(!test.verified || !test.test_runs.id(req.params.test_run_id)){
-      res.send('permission denied');
-      return;
-    }
-    
-    yeti_id = test.yeti;
-
-    async.parallel({
-      report: function(callback){
-        mc_client.report(req.params.test_run_id, function(err, report_res){
-          // Necessary due to dnode bug to stringify objects
-          report_res = JSON.parse(report_res);
-          if(err){
-            callback(err);
-          } else {
-            callback(null, report_res);
-          }
-        });
-      },
-      status: function(callback){
-        mc_client.status(yeti_id, function(err, status_res){
-          if(err){
-            callback(err);
-          } else {
-            callback(null, status_res);
-          }
-        });
-      }
-    }, function(err, results){
-      if(err){
-        handle_error(res, err);
-      } else {
-        console.log("sending some results");
-        res.send(results);
-      }
-    });
-  });
-
   app.get('/test/report/:test_id/:test_run_id', function(req, res){
     if(!force_authentication(req, res)) return;
     res.render('test_report',_.extend(logged_in(req),{test_id: req.params.test_id, test_run_id: req.params.test_run_id, session_id: req.sessionID})); 

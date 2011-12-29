@@ -323,10 +323,6 @@ var mc = dnode(function (client, conn){
         }
       }
     });
-    if(_.size(yeti_statuses) == 0){
-      callback('no yetis with test id '+id);
-      return;
-    }
     
     async.parallel(yeti_statuses, function(err, results){
       if(err){
